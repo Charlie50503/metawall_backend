@@ -8,7 +8,8 @@ import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
 
 const app = express();
-
+import "./connections"
+// import { errorHandle} from "./services/errorHandle"
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
