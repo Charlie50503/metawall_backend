@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./dist/server.js",
-    "dev": "nodemon ./bin/server.ts"
+    "dev": "nodemon ./bin/server.ts",
+    "fmt": "prettier --config .prettierrc --write **/*.ts"
   },
   "dependencies": {
     "@types/express": "^4.17.13",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@types/cookie-parser": "^1.4.3",
     "@types/debug": "^4.1.7",
-    "@types/morgan": "^1.9.3"
+    "@types/morgan": "^1.9.3",
+    "prettier": "2.7.1"
   }
 }
