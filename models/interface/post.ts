@@ -1,4 +1,4 @@
-import { Schema, Types } from "mongoose";
+import { Types } from "mongoose";
 export interface PostModelDto {
     creator: Types.ObjectId;
     content: string;

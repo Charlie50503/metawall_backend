@@ -1,5 +1,5 @@
 // models/PostsModel.js
-import { Schema, Types } from "mongoose";
+import { Schema } from "mongoose";
 import mongoose from "mongoose";
 import { PostModelDto } from "./interface/post";
 // 建立 Schema
