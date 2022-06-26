@@ -5,18 +5,22 @@ import { FollowModelDto } from "./interface/follow";
 const followSchema = new mongoose.Schema<FollowModelDto>(
   {
     // 設計稿 4.追蹤名單
-    user: { // 自己
+    user: {
+      // 自己
       type: Schema.Types.ObjectId,
       ref: "User",
-      select: false
+      select: false,
     },
-    following: [{ // 別人
-      type: Schema.Types.ObjectId,
-      ref: "User"
-    }],
+    following: [
+      {
+        // 別人
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     createdAt: {
       type: Date,
-      default: Date.now
+      default: Date.now,
     },
     updatedAt: {
       type: Date,
@@ -29,7 +33,7 @@ const followSchema = new mongoose.Schema<FollowModelDto>(
     },
   },
   {
-    versionKey: false
+    versionKey: false,
   }
 );
 
