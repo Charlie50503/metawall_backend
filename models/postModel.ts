@@ -1,5 +1,4 @@
 // models/PostsModel.js
-// import { ObjectID } from "../types/mongoDB";
 import { Schema, Types } from 'mongoose';
 import mongoose from "mongoose"
 import { Post } from "./interface/post"

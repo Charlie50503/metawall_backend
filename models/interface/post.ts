@@ -6,8 +6,8 @@ export interface Post {
   comments: Array<Types.ObjectId>,
   isDelete: boolean,
   likes: Array<Types.ObjectId>,
-  createAt: Date,
-  updateAt: Date
+  createdAt: Date,
+  updatedAt: Date
 
 }
 
