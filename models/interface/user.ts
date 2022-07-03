@@ -1,4 +1,4 @@
-export interface UserModelDto {
+export interface UserModelDto extends Document {
   nickName: string;
   sex: string;
   avatar: string;
