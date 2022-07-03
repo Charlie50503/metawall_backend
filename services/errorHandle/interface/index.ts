@@ -1,6 +1,6 @@
 export interface customError {
   isOperational:boolean,
-  statusCode:number,
+  statusCode:string,
   message:string,
   
 }
