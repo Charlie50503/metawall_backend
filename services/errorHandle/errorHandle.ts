@@ -1,5 +1,6 @@
-import express from "express";
-import { customError } from "./errorHandle/interface";
+import express from "express"
+import { customError } from "./interface";
+import { HttpError } from '../../utils/error';
 
 
 export class ErrorHandle {
@@ -31,5 +32,10 @@ export class ErrorHandle {
         message: "系統錯誤，請洽管理員"
       })
     }
+  }
+
+  public static appError = (httpStatus: string, errMessage: string, next: express.NextFunction) => {
+    const error = new HttpError(httpStatus, true, errMessage);
+    next(error)
   }
 }
