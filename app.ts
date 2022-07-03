@@ -6,6 +6,7 @@ import logger from "morgan";
 
 import indexRouter from "./routes/index";
 import userRouter from "./routes/user";
+import postRouter from "./routes/post";
 
 const app = express();
 import "./connections";
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/user", userRouter);
+app.use("/post", postRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
