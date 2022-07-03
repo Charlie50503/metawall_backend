@@ -1,5 +1,5 @@
 import express from "express"
-const successHandle = (req: express.Request, res: express.Response, data: {}): void => {
+const successHandle = (req: express.Request, res: express.Response, data: any): void => {
   res.status(200).json(
     {
       status: "success",
