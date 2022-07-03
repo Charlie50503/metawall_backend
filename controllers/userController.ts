@@ -6,6 +6,9 @@ import { UserModelDto } from "../models/interface/user";
 export class UsersController {
   public static async getProfile(req: express.Request, res: express.Response, next: express.NextFunction) {
     const { id } = req.params
+    if(!id) {
+      return next(ErrorHandle.appError('400', '沒有找到對象ID', next))
+    }
     const result: UserModelDto | null = await User.findById(id)
     if (!result) {
       return next(ErrorHandle.appError('400', '沒有找到對象USER', next))
