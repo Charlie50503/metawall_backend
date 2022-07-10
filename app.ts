@@ -36,7 +36,8 @@ app.use("/post", postRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
+  res.status(404).json({ status: 'error', message: '無此路由' })
+  // next(createError(404));
 });
 
 app.use(function (
