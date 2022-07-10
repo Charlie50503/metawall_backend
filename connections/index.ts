@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 
 dotenv.config({
-  path: "config.env",
+  path: "setting.env",
 });
 
 const { DATABASE, DATABASE_PASSWORD } = process.env;
