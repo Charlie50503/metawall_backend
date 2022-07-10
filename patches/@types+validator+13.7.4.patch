@@ -1,0 +1,13 @@
+diff --git a/node_modules/@types/validator/index.d.ts b/node_modules/@types/validator/index.d.ts
+index a079912..f383c6b 100644
+--- a/node_modules/@types/validator/index.d.ts
++++ b/node_modules/@types/validator/index.d.ts
+@@ -1063,7 +1063,7 @@ declare namespace validator {
+         pointsForContainingNumber?: number | undefined;
+         pointsForContainingSymbol?: number | undefined;
+     }
+-    function isStrongPassword(str: string, options?: strongPasswordOptions): boolean;
++    function isStrongPassword(str: string, options?: strongPasswordOptions): boolean | number;
+     /**
+      * Check if the string contains any surrogate pairs chars.
+      */
