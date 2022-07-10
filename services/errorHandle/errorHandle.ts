@@ -3,7 +3,7 @@ import { customError } from "./interface";
 import { HttpError } from "../../utils/error";
 
 export class ErrorHandle {
-  public static handleErrorAsync = (func: any) => {
+  public static handleErrorAsync = (func: (req: express.Request, res: express.Response, next: express.NextFunction) => Promise<void>) => {
     return function (req: express.Request, res: express.Response, next: express.NextFunction) {
       func(req, res, next).catch(function (error: express.ErrorRequestHandler) {
         return next(error);
