@@ -65,12 +65,12 @@ export class CheckValidator {
       }
     }
   }
-  comparePassword(params: { [key: string]: string | undefined }) {
+  public static comparePassword(params: { [key: string]: string | undefined }) {
     const { password, confirmPassword } = params
     if (!password) {
       throw new Error("格式不正確")
     }
-    if (confirmPassword) {
+    if (!confirmPassword) {
       throw new Error("格式不正確")
     }
     if (password !== confirmPassword) {
