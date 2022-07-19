@@ -38,7 +38,7 @@ export default class Auth {
       next(ErrorHandle.appError("401", "token 不正確", next))
     }
 
-    const currentUser = await User.findById(decoded['id']);
+    // const currentUser = await User.findById(decoded['id']);
 
     // req.user = currentUser
 
