@@ -1,5 +1,5 @@
 import validator from "validator";
-
+import _ from "lodash";
 export class CheckValidator {
 
   /**
@@ -17,21 +17,33 @@ export class CheckValidator {
       }
       switch (key) {
         case "nickName":
+          if(!_.isString(value)){
+            throw new Error("必須是 String")
+          }
           if (!validator.isLength(value, { min: 2 })) {
             throw new Error("name 至少 2 個字以上")
           }
           break;
         case "sex":
+          if(!_.isString(value)){
+            throw new Error("必須是 String")
+          }
           if (!["male", "female"].includes(value)) {
             throw new Error("sex 只能是 male 或是 female")
           }
           break;
         case "email":
+          if(!_.isString(value)){
+            throw new Error("必須是 String")
+          }
           if (!validator.isEmail(value)) {
             throw new Error("Email 格式不對")
           }
           break;
         case "password":
+          if(!_.isString(value)){
+            throw new Error("必須是 String")
+          }
           if (!validator.isLength(value, { min: 8 })) {
             throw new Error("密碼需要至少 8 碼以上")
           }
@@ -49,7 +61,6 @@ export class CheckValidator {
           if (!validator.isLength(value, { min: 8 })) {
             throw new Error("密碼需要至少 8 碼以上")
           }
-
           break;
       }
     }
