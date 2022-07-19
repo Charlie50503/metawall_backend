@@ -7,6 +7,7 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get("/profile/:id", Auth.checkToken,ErrorHandle.handleErrorAsync(UsersController.getProfile));
+router.patch("/profile", Auth.checkToken,RequestParams.patchUpdateProfile,ErrorHandle.handleErrorAsync(UsersController.patchUpdateProfile));
 router.post("/sign-in",RequestParams.signIn, ErrorHandle.handleErrorAsync(UsersController.postSignIn));
 router.post("/sign-up",RequestParams.signUp, ErrorHandle.handleErrorAsync(UsersController.postSignUp));
 router.get("/check-is-user",Auth.checkToken,(req:express.Request,res: express.Response )=>{
