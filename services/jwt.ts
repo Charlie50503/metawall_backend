@@ -9,7 +9,7 @@ export class JWT {
       const token = jwt.sign({ id }, JWT_SECRET, {
         expiresIn: JWT_EXPIRES_DAY
       })
-      if(!token) return reject("token 生成錯誤")
+      if (!token) return reject("token 生成錯誤")
       return resolve(token)
     })
   }

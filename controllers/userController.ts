@@ -4,7 +4,8 @@ import User from "../models/userModel";
 import { successHandle } from "../services/successHandle";
 import { ErrorHandle } from "../services/errorHandle/errorHandle";
 import { UserModelDto } from "../models/interface/user";
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
+
 interface updateProfileIF {
   nickName: string,
   sex: string,
@@ -81,12 +82,12 @@ class UsersController {
     next: express.NextFunction
   ) {
     const { email, password } = req.body
-    const user = await User.findOne({email}).select("+password")
+    const user = await User.findOne({ email }).select("+password")
     if (!user) {
       return next(ErrorHandle.appError("400", "帳號或密碼錯誤", next));
     }
     const auth = await bcrypt.compare(password, user.password)
-    if (!auth){
+    if (!auth) {
       return next(ErrorHandle.appError("400", "帳號或密碼錯誤", next));
     }
     const token = await JWT.generateJwtToken(user.id)
