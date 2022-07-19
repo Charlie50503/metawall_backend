@@ -18,7 +18,7 @@ export class JWT {
 
   public static async decodeTokenGetId(
     req: express.Request, res: express.Response, next: express.NextFunction
-  ) {
+  ):Promise<string | void> {
     let token = ""
 
     if (
