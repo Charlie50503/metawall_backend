@@ -13,6 +13,9 @@ export default class RequestParams {
     next: express.NextFunction) {
     const { email, password, confirmPassword, nickName } = req.body
     CheckValidator.checkerParams({ email, password, confirmPassword, nickName })
+    CheckValidator.comparePassword({ password, confirmPassword })
+    next();
+  }
     next();
   }
   public static patchUpdateProfile(req: express.Request,
