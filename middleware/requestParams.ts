@@ -15,4 +15,11 @@ export default class RequestParams {
     CheckValidator.checkerParams({ email, password, confirmPassword, nickName })
     next();
   }
+  public static patchUpdateProfile(req: express.Request,
+    res: express.Response,
+    next: express.NextFunction) {
+    const { nickName, sex , avatar } = req.body
+    CheckValidator.checkerParams({ nickName, sex })
+    next();
+  }
 }
