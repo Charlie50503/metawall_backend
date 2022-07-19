@@ -16,6 +16,12 @@ export default class RequestParams {
     CheckValidator.comparePassword({ password, confirmPassword })
     next();
   }
+  public static updatePassword(req: express.Request,
+    res: express.Response,
+    next: express.NextFunction) {
+    const { password, confirmPassword } = req.body
+    CheckValidator.checkerParams({ password, confirmPassword })
+    CheckValidator.comparePassword({ password, confirmPassword })
     next();
   }
   public static patchUpdateProfile(req: express.Request,

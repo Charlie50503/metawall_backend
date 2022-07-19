@@ -11,6 +11,10 @@ interface updateProfileIF {
   sex: string,
   avatar?: string
 }
+interface updatePasswordIF {
+  password: string,
+  confirmPassword: string
+}
 
 class UsersController {
   public async getProfile(
@@ -51,6 +55,27 @@ class UsersController {
     if (!_result) { return next(ErrorHandle.appError("400", "更新失敗", next)); }
 
     successHandle(req, res, _result)
+  }
+
+  public async patchUpdatePassword(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    const { password, confirmPassword } = req.body as updatePasswordIF
+
+    const bcryptPassword = await bcrypt.hash(password, 12);
+    const userId = await JWT.decodeTokenGetId(req, res, next)
+
+    const _result = await User.findByIdAndUpdate(userId, {
+      password: bcryptPassword
+    })
+
+    if (!_result) { return next(ErrorHandle.appError("400", "密碼更新失敗", next)); }
+
+    successHandle(req, res, {
+      message: "密碼更新成功"
+    })
   }
 
   public async postSignUp(
