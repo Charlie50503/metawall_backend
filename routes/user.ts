@@ -8,5 +8,9 @@ var router = express.Router();
 router.get("/profile/:id", ErrorHandle.handleErrorAsync(UsersController.getProfile));
 router.post("/sign-in",RequestParams.signIn, ErrorHandle.handleErrorAsync(UsersController.postSignIn));
 router.post("/sign-up",RequestParams.signUp, ErrorHandle.handleErrorAsync(UsersController.postSignUp));
-
+router.get("/check-is-user",Auth.checkToken,(req:express.Request,res: express.Response )=>{
+  res.status(200).json({
+    message:"驗證成功"
+  })
+})
 export default router;
