@@ -10,6 +10,19 @@ class PostsController {
     });
     successHandle(req, res, allPostData);
   }
+
+  public async postCreatePost(req: express.Request, res: express.Response, next: express.NextFunction) {
+    const userId = await JWT.decodeTokenGetId(req, res, next) as Types.ObjectId
+    const { content, imgURL } = req.body as postCreatePostIF
+
+    const _result = await Post.create({
+      creator: userId,
+      content,
+      imgURL
+    })
+
+    successHandle(req, res, _result)
+  }
 }
 
 export default new PostsController();

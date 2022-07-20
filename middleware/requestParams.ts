@@ -31,4 +31,11 @@ export default class RequestParams {
     CheckValidator.checkerParams({ nickName, sex })
     next();
   }
+  public static postCreatePost(req: express.Request,
+    res: express.Response,
+    next: express.NextFunction) {
+    const { content, imgURL } = req.body
+    CheckValidator.checkerParams({ content, imgURL })
+    next();
+  }
 }
