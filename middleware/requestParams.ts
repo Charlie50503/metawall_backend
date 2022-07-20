@@ -27,7 +27,7 @@ export default class RequestParams {
   public static patchUpdateProfile(req: express.Request,
     res: express.Response,
     next: express.NextFunction) {
-    const { nickName, sex , avatar } = req.body
+    const { nickName, sex, avatar } = req.body
     CheckValidator.checkerParams({ nickName, sex })
     next();
   }
