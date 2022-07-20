@@ -1,1 +1,1 @@
-export { default as RequestParams } from "./requestParams"
+export { default as RequestParams } from "./requestParams";
