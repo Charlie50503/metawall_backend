@@ -5,7 +5,6 @@ import Auth from "../middleware/auth";
 import { ErrorHandle } from "../services/errorHandle/errorHandle";
 var router = express.Router();
 
-/* GET users listing. */
 router.get(
   "/profile/:id",
   Auth.checkToken,
