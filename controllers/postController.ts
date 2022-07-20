@@ -40,17 +40,67 @@ class PostsController {
     successHandle(req, res, allPostData);
   }
 
-  public async postCreatePost(req: express.Request, res: express.Response, next: express.NextFunction) {
-    const userId = await JWT.decodeTokenGetId(req, res, next) as Types.ObjectId
-    const { content, imgURL } = req.body as postCreatePostIF
+  public async postCreatePost(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
+    const { content, imgURL } = req.body as postCreatePostIF;
 
     const _result = await Post.create({
       creator: userId,
       content,
-      imgURL
-    })
+      imgURL,
+    });
 
-    successHandle(req, res, _result)
+    if (!_result) {
+      return next(ErrorHandle.appError("400", "更新失敗", next));
+    }
+
+    successHandle(req, res, _result);
+  }
+  public async deleteDeletePost(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    const { postId } = req.params;
+    if (!postId) {
+      return next(ErrorHandle.appError("400", "沒找到 postId", next));
+    }
+
+    const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
+    const targetPost = await Post.find({ _id: postId, isDeleted: false });
+    if (!targetPost) {
+      return next(ErrorHandle.appError("400", "沒找到可刪除貼文", next));
+    }
+
+    try {
+      const _result: PostModelDto = await Post.findOneAndUpdate(
+        {
+          _id: postId,
+          creator: userId,
+          isDeleted: false,
+        },
+        { isDeleted: true },
+        { upsert: true, returnOriginal: false, runValidators: true }
+      );
+
+      console.log("result", _result);
+      if (!_result) {
+        return next(ErrorHandle.appError("400", "刪除失敗", next));
+      }
+    } catch (error: mongoose.Error | any) {
+      console.log("error", error.code);
+      if (error?.code === 11000) {
+        return next(ErrorHandle.appError("400", "刪除失敗", next));
+      }
+    }
+
+    successHandle(req, res, {
+      message: "刪除成功",
+    });
   }
 }
 
