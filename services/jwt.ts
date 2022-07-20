@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken"
 import { DotenvParseOutput } from "dotenv"
 import express from "express";
 import { ErrorHandle } from "./errorHandle/errorHandle";
+import { Types } from "mongoose";
 export class JWT {
   public static generateJwtToken(id: string): Promise<string> {
     console.log("id",id);
@@ -18,7 +19,7 @@ export class JWT {
 
   public static async decodeTokenGetId(
     req: express.Request, res: express.Response, next: express.NextFunction
-  ):Promise<string | void> {
+  ):Promise<string | Types.ObjectId | void> {
     let token = ""
 
     if (
