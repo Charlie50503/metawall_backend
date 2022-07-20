@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=prod node ./dist/server.js",
+    "start": "cross-env NODE_ENV=prod node ./dist/bin/server.js",
     "dev": "cross-env NODE_ENV=dev nodemon ./bin/server.ts",
     "fmt": "prettier --config .prettierrc --write **/*.ts",
+    "build": "tsc",
     "postinstall": "patch-package"
   },
   "dependencies": {
