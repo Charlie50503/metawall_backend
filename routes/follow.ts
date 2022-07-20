@@ -9,5 +9,10 @@ router.get(
   Auth.checkToken,
   ErrorHandle.handleErrorAsync(followController.getFollowing)
 );
+router.post(
+  "/:targetId",
+  Auth.checkToken,
+  ErrorHandle.handleErrorAsync(followController.postAddFollowing)
+);
 
 export default router;
