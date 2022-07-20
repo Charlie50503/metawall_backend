@@ -10,6 +10,7 @@ const followSchema = new mongoose.Schema<FollowModelDto>(
       type: Schema.Types.ObjectId,
       ref: "User",
       select: false,
+      unique: true,
     },
     following: [
       {
