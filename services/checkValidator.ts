@@ -62,6 +62,16 @@ export class CheckValidator {
             throw new Error("密碼需要至少 8 碼以上")
           }
           break;
+        case "content":
+          if(!_.isString(value)){
+            throw new Error("必須是 String")
+          }
+          break;
+        case "imgURL":
+          if(!_.isString(value)){
+            throw new Error("必須是 String")
+          }
+          break;
       }
     }
   }
