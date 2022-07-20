@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import Follow from "../models/followModel";
+import { FollowModelDto } from "../models/interface/follow";
 import User from "../models/userModel";
 import { ErrorHandle } from "../services/errorHandle/errorHandle";
 import { JWT } from "../services/jwt";
@@ -50,7 +51,7 @@ class FollowController {
       return next(ErrorHandle.appError("400", "不能追蹤自己", next));
     }
 
-    const isUserDataExist = await Follow.find({ user: userId });
+    const isUserDataExist = await Follow.find({ user: userId, isDeleted: false });
 
     if (isUserDataExist?.length > 0) {
       const query = { user: userId };
@@ -82,6 +83,55 @@ class FollowController {
 
     console.log(_result);
     successHandle(req, res, _result);
+  }
+
+  public async deleteFollowingTarget(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    // 強行轉換型別
+    const targetId = req.params["targetId"] as unknown as mongoose.Types.ObjectId;
+
+    if (!targetId) {
+      return next(ErrorHandle.appError("400", "沒找到 targetId", next));
+    }
+
+    await User.find({ _id: targetId, isDeleted: false }).catch((error) => {
+      return next(ErrorHandle.appError("400", "不存在該USER", next));
+    });
+
+    const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
+
+    if (targetId === userId) {
+      return next(ErrorHandle.appError("400", "不能刪除自己", next));
+    }
+
+    const _findResult = await Follow.find({ user: userId, isDeleted: false });
+
+    if (_findResult.length === 0) {
+      return next(ErrorHandle.appError("400", "沒有找到資料", next));
+    }
+
+    const { following } = _findResult[0];
+    console.log("following", following);
+    if (!following) {
+      return next(ErrorHandle.appError("400", "處理不正確", next));
+    }
+    const targetIndex = following.findIndex((followingUserId) => followingUserId.equals(targetId));
+
+    if (targetIndex === -1) {
+      return next(ErrorHandle.appError("400", "已刪除該對象", next));
+    }
+    following.splice(targetIndex);
+    const _updateResult = await Follow.findOneAndUpdate(
+      { user: userId, isDeleted: false },
+      { following }
+    ).catch((error) => {
+      return next(ErrorHandle.appError("400", "刪除失敗", next));
+    });
+    console.log("_updateResult", _updateResult);
+    successHandle(req, res, _updateResult);
   }
 }
 

@@ -14,5 +14,10 @@ router.post(
   Auth.checkToken,
   ErrorHandle.handleErrorAsync(followController.postAddFollowing)
 );
+router.delete(
+  "/:targetId",
+  Auth.checkToken,
+  ErrorHandle.handleErrorAsync(followController.deleteFollowingTarget)
+);
 
 export default router;
