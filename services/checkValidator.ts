@@ -10,9 +10,8 @@ export class CheckValidator {
    */
   public static checkerParams(params: { [key: string]: string | undefined }): void {
     for (const [key, value] of Object.entries(params)) {
-      if (!value) {
+      if (!_.isString(value)) {
         console.log("key",key,"value",value);
-        
         throw new Error("欄位未填寫正確")
       }
       switch (key) {
