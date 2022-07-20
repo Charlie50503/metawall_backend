@@ -16,6 +16,7 @@ class FollowController {
 
     const _result = await Follow.find({
       user: targetId,
+      isDeleted:false
     });
 
     console.log(_result);
