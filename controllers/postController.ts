@@ -1,13 +1,32 @@
 import express from "express";
 import Post from "../models/postModel";
+import { JWT } from "../services/jwt";
 import { successHandle } from "../services/successHandle";
+import { Types } from "mongoose";
 
+interface postCreatePostIF {
+  content: string,
+  imgURL: string
+}
 class PostsController {
   public async getAllPost(req: express.Request, res: express.Response) {
-    const allPostData = await Post.find().populate({
-      path: "user",
-      select: "name avatar",
-    });
+    const allPostData = await Post.find({
+      isDeleted: false
+    }).populate({
+      path: "creator",
+      select: "nickName avatar",
+    }).sort({ createdAt: -1 });
+    successHandle(req, res, allPostData);
+  }
+  public async getPersonPost(req: express.Request, res: express.Response, next: express.NextFunction) {
+    const userId = await JWT.decodeTokenGetId(req, res, next) as Types.ObjectId
+    const allPostData = await Post.find({
+      creator: userId,
+      isDeleted: false
+    }).populate({
+      path: "creator",
+      select: "nickName avatar",
+    }).sort({ createdAt: -1 });
     successHandle(req, res, allPostData);
   }
 
