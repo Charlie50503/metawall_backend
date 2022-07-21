@@ -1,7 +1,7 @@
 import express from "express";
 var router = express.Router();
 import PostsController from "../controllers/postController";
-import { RequestParams } from "../middleware";
+import RequestParams from "../middleware/requestParams";
 import Auth from "../middleware/auth";
 import { ErrorHandle } from "../services/errorHandle/errorHandle";
 

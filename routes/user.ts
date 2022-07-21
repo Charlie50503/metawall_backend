@@ -1,6 +1,6 @@
 import express from "express";
 import UsersController from "../controllers/userController";
-import { RequestParams } from "../middleware";
+import RequestParams from "../middleware/requestParams";
 import Auth from "../middleware/auth";
 import { ErrorHandle } from "../services/errorHandle/errorHandle";
 var router = express.Router();
