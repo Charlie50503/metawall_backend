@@ -17,15 +17,9 @@ class CommentController {
       return next(ErrorHandle.appError("400", "沒找到 postId", next));
     }
 
-    const _isPostExist = await Post.findOne({_id:postId,isDeleted:false}).catch((error) => {
-      return next(ErrorHandle.appError("400", "檢索失敗", next));
-    });
-
-    console.log("isPostExist",_isPostExist);
-    
-    if (!_isPostExist) {
+    await Post.findOne({ _id: postId, isDeleted: false }).catch((error) => {
       return next(ErrorHandle.appError("400", "沒有找到貼文", next));
-    }
+    });
 
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
 
