@@ -36,10 +36,12 @@ const postsSchema = new mongoose.Schema<PostModelDto>(
     createdAt: {
       type: Date,
       default: Date.now,
+      select: false,
     },
     updatedAt: {
       type: Date,
       default: Date.now,
+      select: false,
     },
     isDeleted: {
       type: Boolean,

@@ -22,10 +22,12 @@ const followSchema = new mongoose.Schema<FollowModelDto>(
     createdAt: {
       type: Date,
       default: Date.now,
+      select: false,
     },
     updatedAt: {
       type: Date,
       default: Date.now,
+      select: false,
     },
     isDeleted: {
       type: Boolean,
