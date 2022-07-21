@@ -11,5 +11,10 @@ router.post(
   RequestParams.postCreateComment,
   ErrorHandle.handleErrorAsync(commentController.postCreateComment)
 );
+router.delete(
+  "/delete/:commentId",
+  Auth.checkToken,
+  ErrorHandle.handleErrorAsync(commentController.deleteDeleteComment)
+);
 
 export default router;

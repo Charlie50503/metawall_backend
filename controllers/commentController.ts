@@ -63,6 +63,33 @@ class CommentController {
       message: "新增成功"
     });
   }
+
+  public async deleteDeleteComment(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    const commentId = req.params["commentId"] as unknown as mongoose.Types.ObjectId;
+
+    if (!commentId) {
+      return next(ErrorHandle.appError("400", "沒找到 commentId", next));
+    }
+
+    await Comment.findOne({ _id: commentId, isDeleted: false }).catch((error) => {
+      return next(ErrorHandle.appError("400", "留言不存在", next));
+    });
+
+    const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
+
+    const _updateResult = await Comment.findByIdAndUpdate(commentId, { isDeleted: true }).catch((error) => {
+      return next(ErrorHandle.appError("400", "更新失敗", next));
+    });
+
+
+    successHandle(req, res, {
+      message: "刪除成功"
+    });
+  }
 }
 
 export default new CommentController();
