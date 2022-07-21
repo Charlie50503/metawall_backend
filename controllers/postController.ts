@@ -103,12 +103,10 @@ class PostsController {
         { upsert: true, returnOriginal: false, runValidators: true }
       );
 
-      console.log("result", _result);
       if (!_result) {
         return next(ErrorHandle.appError("400", "刪除失敗", next));
       }
     } catch (error: mongoose.Error | any) {
-      console.log("error", error.code);
       if (error?.code === 11000) {
         return next(ErrorHandle.appError("400", "刪除失敗", next));
       }

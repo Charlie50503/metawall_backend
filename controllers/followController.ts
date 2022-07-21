@@ -129,7 +129,6 @@ class FollowController {
     }
     
     const { following } = _findResult;
-    console.log("following", following);
     if (!following) {
       return next(ErrorHandle.appError("400", "處理不正確", next));
     }
