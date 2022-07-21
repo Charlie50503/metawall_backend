@@ -44,7 +44,7 @@ class CommentController {
       returnOriginal: false,
       runValidators: true,
     };
-    const options = { match: { isDeleted: { $eq: false }}};
+    const options = { match: { isDeleted: { $eq: false } } };
     const _updateResult = await Post.updateOne(
       query,
       updateDocument,
