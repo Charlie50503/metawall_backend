@@ -41,7 +41,7 @@ class FollowController {
       return next(ErrorHandle.appError("400", "沒找到 targetId", next));
     }
 
-    await User.find({ _id: targetId, isDeleted: false }).catch((error) => {
+    await User.findOne({ _id: targetId, isDeleted: false }).catch((error) => {
       return next(ErrorHandle.appError("400", "不存在該USER", next));
     });
 
@@ -79,7 +79,9 @@ class FollowController {
       });
     }
 
-    const _result = await Follow.find({ user: userId });
+    const _result = await Follow.findOne({_id:userId,isDeleted:false}).catch((error) => {
+      return next(ErrorHandle.appError("400", "沒找到對象USER", next));
+    });
 
     console.log(_result);
     successHandle(req, res, _result);
@@ -97,7 +99,7 @@ class FollowController {
       return next(ErrorHandle.appError("400", "沒找到 targetId", next));
     }
 
-    await User.find({ _id: targetId, isDeleted: false }).catch((error) => {
+    await User.findOne({ _id: targetId, isDeleted: false }).catch((error) => {
       return next(ErrorHandle.appError("400", "不存在該USER", next));
     });
 
@@ -107,13 +109,11 @@ class FollowController {
       return next(ErrorHandle.appError("400", "不能刪除自己", next));
     }
 
-    const _findResult = await Follow.find({ user: userId, isDeleted: false });
-
-    if (_findResult.length === 0) {
+    const _findResult = await Follow.findOne({ user: userId, isDeleted: false }).catch(error=>{
       return next(ErrorHandle.appError("400", "沒有找到資料", next));
-    }
+    }) as FollowModelDto
 
-    const { following } = _findResult[0];
+    const { following } = _findResult;
     console.log("following", following);
     if (!following) {
       return next(ErrorHandle.appError("400", "處理不正確", next));

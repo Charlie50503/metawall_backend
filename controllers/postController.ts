@@ -83,10 +83,10 @@ class PostsController {
     }
 
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
-    const targetPost = await Post.find({ _id: postId, isDeleted: false });
-    if (!targetPost) {
+    
+    await Post.findOne({ _id: postId, isDeleted: false }).catch(error=>{
       return next(ErrorHandle.appError("400", "沒找到可刪除貼文", next));
-    }
+    })
 
     try {
       const _result: PostModelDto = await Post.findOneAndUpdate(
