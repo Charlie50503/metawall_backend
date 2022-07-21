@@ -18,6 +18,12 @@ class PostsController {
       .populate({
         path: "creator",
         select: "nickName avatar",
+        match: { isDeleted: { $eq: false } }
+      })
+      .populate({
+        path: "comments",
+        select: "creator comment",
+        match: { isDeleted: { $eq: false } }
       })
       .sort({ createdAt: -1 });
     successHandle(req, res, allPostData);
@@ -35,6 +41,12 @@ class PostsController {
       .populate({
         path: "creator",
         select: "nickName avatar",
+        match: { isDeleted: { $eq: false } }
+      })
+      .populate({
+        path: "comments",
+        select: "creator comment",
+        match: { isDeleted: { $eq: false } }
       })
       .sort({ createdAt: -1 });
     successHandle(req, res, allPostData);
