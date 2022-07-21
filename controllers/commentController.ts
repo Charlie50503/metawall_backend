@@ -17,9 +17,13 @@ class CommentController {
       return next(ErrorHandle.appError("400", "沒找到 postId", next));
     }
 
-    await Post.findOne({ _id: postId, isDeleted: false }).catch((error) => {
+    const _isPostExist = await Post.findOne({ _id: postId, isDeleted: false }).catch((error) => {
       return next(ErrorHandle.appError("400", "沒有找到貼文", next));
     });
+
+    if (!_isPostExist) {
+      return next(ErrorHandle.appError("400", "沒有找到貼文", next));
+    }
 
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
 
@@ -69,9 +73,13 @@ class CommentController {
       return next(ErrorHandle.appError("400", "沒找到 commentId", next));
     }
 
-    await Comment.findOne({ _id: commentId, isDeleted: false }).catch((error) => {
+    const _isCommentExist = await Comment.findOne({ _id: commentId, isDeleted: false }).catch((error) => {
       return next(ErrorHandle.appError("400", "留言不存在", next));
     });
+
+    if (!_isCommentExist) {
+      return next(ErrorHandle.appError("400", "留言不存在", next));
+    }
 
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
 

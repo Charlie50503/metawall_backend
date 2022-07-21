@@ -41,9 +41,13 @@ class FollowController {
       return next(ErrorHandle.appError("400", "沒找到 targetId", next));
     }
 
-    await User.findOne({ _id: targetId, isDeleted: false }).catch((error) => {
+    const isUserExist = await User.findOne({ _id: targetId, isDeleted: false }).catch((error) => {
       return next(ErrorHandle.appError("400", "不存在該USER", next));
     });
+
+    if (!isUserExist) {
+      return next(ErrorHandle.appError("400", "不存在該USER", next));
+    }
 
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
 
@@ -82,6 +86,10 @@ class FollowController {
       return next(ErrorHandle.appError("400", "沒找到對象USER", next));
     });
 
+    if(!_result){
+      return next(ErrorHandle.appError("400", "沒找到對象USER", next));
+    }
+
     console.log(_result);
     successHandle(req, res, _result);
   }
@@ -98,9 +106,13 @@ class FollowController {
       return next(ErrorHandle.appError("400", "沒找到 targetId", next));
     }
 
-    await User.findOne({ _id: targetId, isDeleted: false }).catch((error) => {
+    const isUserExist = await User.findOne({ _id: targetId, isDeleted: false }).catch((error) => {
       return next(ErrorHandle.appError("400", "不存在該USER", next));
     });
+
+    if (!isUserExist) {
+      return next(ErrorHandle.appError("400", "不存在該USER", next));
+    }
 
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
 
@@ -112,6 +124,10 @@ class FollowController {
       return next(ErrorHandle.appError("400", "沒有找到資料", next));
     }) as FollowModelDto
 
+    if(_findResult){
+      return next(ErrorHandle.appError("400", "沒有找到資料", next));
+    }
+    
     const { following } = _findResult;
     console.log("following", following);
     if (!following) {
