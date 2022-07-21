@@ -8,6 +8,7 @@ import indexRouter from "./routes/index";
 import userRouter from "./routes/user";
 import postRouter from "./routes/post";
 import followRouter from "./routes/follow";
+import commentRouter from "./routes/comment";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/", indexRouter);
 app.use("/user", userRouter);
 app.use("/post", postRouter);
 app.use("/follow", followRouter);
+app.use("/comment", commentRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

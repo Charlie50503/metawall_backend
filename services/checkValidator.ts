@@ -70,6 +70,11 @@ export class CheckValidator {
             throw new Error("必須是 String");
           }
           break;
+        case "comment":
+          if (!_.isString(value)) {
+            throw new Error("必須是 String");
+          }
+          break;
       }
     }
   }

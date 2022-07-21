@@ -40,4 +40,13 @@ export default class RequestParams {
     CheckValidator.checkerParams({ content, imgURL });
     next();
   }
+  public static postCreateComment(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    const { comment } = req.body;
+    CheckValidator.checkerParams({ comment });
+    next();
+  }
 }
