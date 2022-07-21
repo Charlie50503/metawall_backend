@@ -23,4 +23,11 @@ router.delete(
   ErrorHandle.handleErrorAsync(PostsController.deleteDeletePost)
 );
 
+router.get(
+  "/:postId",
+  Auth.checkToken,
+  ErrorHandle.handleErrorAsync(PostsController.getOnePostAndComment)
+);
+
+
 export default router;

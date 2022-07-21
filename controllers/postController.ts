@@ -114,6 +114,37 @@ class PostsController {
       message: "刪除成功",
     });
   }
+
+  public async getOnePostAndComment(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    const postId = req.params["postId"] as unknown as mongoose.Types.ObjectId;
+
+    if (!postId) {
+      return next(ErrorHandle.appError("400", "沒找到 postId", next));
+    }
+
+    const _postData = await Post.findOne({ _id: postId, isDeleted: false })
+      .populate({
+        path: "creator",
+        select: "nickName avatar",
+        match: { isDeleted: { $eq: false } }
+      })
+      .populate({
+        path: "comments",
+        select: "creator comment",
+        match: { isDeleted: { $eq: false } }
+      }).catch((error) => {
+        return next(ErrorHandle.appError("400", "沒有找到貼文", next));
+      });
+
+    if (!_postData) {
+      return next(ErrorHandle.appError("400", "沒有找到貼文", next));
+    }
+    successHandle(req, res, _postData);
+  }
 }
 
 export default new PostsController();
