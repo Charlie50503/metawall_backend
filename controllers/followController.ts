@@ -54,15 +54,14 @@ class FollowController {
     const isUserDataExist = await Follow.find({ user: userId, isDeleted: false });
 
     if (isUserDataExist?.length > 0) {
-      const query = { user: userId };
+      const query = { user: userId, isDeleted: false };
       const updateDocument = {
         $push: { following: targetId },
         upsert: true,
         returnOriginal: false,
         runValidators: true,
       };
-      const options = { $set: { isDeleted: false } };
-      const _updateResult = await Follow.updateOne(query, updateDocument, options).catch(
+      const _updateResult = await Follow.updateOne(query, updateDocument).catch(
         (error) => {
           return next(ErrorHandle.appError("400", "添加失敗", next));
         }
