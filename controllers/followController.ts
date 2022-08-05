@@ -122,9 +122,9 @@ class FollowController {
 
     const _findResult = await Follow.findOne({ user: userId, isDeleted: false }).catch(error=>{
       return next(ErrorHandle.appError("400", "沒有找到資料", next));
-    }) as FollowModelDto
+    });
 
-    if(_findResult){
+    if(!_findResult){
       return next(ErrorHandle.appError("400", "沒有找到資料", next));
     }
     
