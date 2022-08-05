@@ -9,6 +9,7 @@ import userRouter from "./routes/user";
 import postRouter from "./routes/post";
 import followRouter from "./routes/follow";
 import commentRouter from "./routes/comment";
+import likeRouter from "./routes/like";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/user", userRouter);
 app.use("/post", postRouter);
 app.use("/follow", followRouter);
 app.use("/comment", commentRouter);
+app.use("/like", likeRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
