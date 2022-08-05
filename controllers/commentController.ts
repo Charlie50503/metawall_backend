@@ -41,18 +41,16 @@ class CommentController {
       return next(ErrorHandle.appError("400", "新增留言失敗", next));
     }
 
-    const query = { _id: postId };
+    const query = { _id: postId ,isDeleted: false};
     const updateDocument = {
       $addToSet: { comments: _createResult.id },
       upsert: true,
       returnOriginal: false,
       runValidators: true,
     };
-    const options = { match: { isDeleted: { $eq: false } } };
     const _updateResult = await Post.updateOne(
       query,
       updateDocument,
-      options
     );
     if (_updateResult?.acknowledged === false) {
       return next(ErrorHandle.appError("400", "添加失敗", next));
