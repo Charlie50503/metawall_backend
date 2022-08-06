@@ -147,6 +147,37 @@ class PostsController {
     }
     successHandle(req, res, _postData);
   }
+
+  public async getSearchPost(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ){
+    const { q } = req.query as {[key:string]:string};
+    
+    if(!q){
+      return next(ErrorHandle.appError("400", "沒有找到檢索條件", next));
+    }
+
+    const keyword = decodeURI(q);
+
+    console.log(keyword);
+    
+    const regex = new RegExp(keyword);
+    const _searchResult = await Post.find({
+      content:{ $regex:regex },
+      isDeleted:false
+    })
+
+    console.log(_searchResult);
+
+    if(!_searchResult){
+      return next(ErrorHandle.appError("400", "沒找到內容", next));
+    }
+
+    successHandle(req, res, _searchResult);
+    
+  }
 }
 
 export default new PostsController();

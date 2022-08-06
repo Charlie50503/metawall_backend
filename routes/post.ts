@@ -28,6 +28,11 @@ router.get(
   Auth.checkToken,
   ErrorHandle.handleErrorAsync(PostsController.getOnePostAndComment)
 );
+router.get(
+  "/",
+  Auth.checkToken,
+  ErrorHandle.handleErrorAsync(PostsController.getSearchPost)
+);
 
 
 export default router;
