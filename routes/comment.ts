@@ -17,4 +17,5 @@ router.delete(
   ErrorHandle.handleErrorAsync(commentController.deleteDeleteComment)
 );
 
+router.patch("/edit",Auth.checkToken,ErrorHandle.handleErrorAsync(commentController.patchEditComment))
 export default router;

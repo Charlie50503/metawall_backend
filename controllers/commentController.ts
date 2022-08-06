@@ -90,6 +90,40 @@ class CommentController {
       message: "刪除成功"
     });
   }
+
+  public async patchEditComment(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ){
+    const commentId:mongoose.Types.ObjectId = req.body["commentId"];
+    const comment: string = req.body["comment"];
+
+    const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
+
+    const _updateResult = await Comment.findOneAndUpdate({
+      _id:commentId,
+      creator:userId,
+      isDeleted:false
+    },{
+      comment:comment
+    },
+    { upsert: true, returnOriginal: false, runValidators: true })
+    .catch((error) => {
+      return next(ErrorHandle.appError("400", "更新失敗", next));
+    });
+
+    console.log(_updateResult);
+
+    if (!_updateResult) {
+      return next(ErrorHandle.appError("400", "更新失敗", next));
+    }
+    
+    successHandle(req, res, {
+      message: "更新成功"
+    });
+    
+  }
 }
 
 export default new CommentController();
