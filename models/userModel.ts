@@ -18,6 +18,7 @@ const usersSchema = new mongoose.Schema<UserModelDto>(
     avatar: {
       type: String,
       trim: true,
+      default: ""
     },
     email: {
       type: String,
