@@ -10,6 +10,8 @@ import postRouter from "./routes/post";
 import followRouter from "./routes/follow";
 import commentRouter from "./routes/comment";
 import likeRouter from "./routes/like";
+// const cors = require('cors');
+import cors from "cors"
 
 const app = express();
 
@@ -27,6 +29,7 @@ import "./connections";
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
+app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
