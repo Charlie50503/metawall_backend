@@ -25,6 +25,7 @@ class PostsController {
         select: "creator comment",
         match: { isDeleted: { $eq: false } }
       })
+      .select('+createdAt')
       .sort({ createdAt: -1 });
     successHandle(req, res, allPostData);
   }
