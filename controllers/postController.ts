@@ -17,7 +17,7 @@ class PostsController {
     })
       .populate({
         path: "creator",
-        select: "nickName avatar",
+        select: "nickName avatar sex",
         match: { isDeleted: { $eq: false } }
       })
       .populate({
