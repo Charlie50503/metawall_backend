@@ -29,7 +29,7 @@ class PostsController {
           select: "nickName avatar sex"
         }
       })
-      .select('+createdAt')
+      .select("+createdAt")
       .sort({ createdAt: -1 });
     successHandle(req, res, allPostData);
   }
