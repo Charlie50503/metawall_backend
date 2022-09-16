@@ -55,8 +55,15 @@ class CommentController {
     if (_updateResult?.acknowledged === false) {
       return next(ErrorHandle.appError("400", "添加失敗", next));
     }
+
+    const _findCreatedCommentResult = await Comment.findById(_createResult.id).populate(
+      {
+        path: "creator",
+        select: "nickName avatar sex"
+      })
+      
     successHandle(req, res, {
-      message: "新增成功"
+      comment: _findCreatedCommentResult
     });
   }
 
