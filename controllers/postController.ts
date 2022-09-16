@@ -12,6 +12,9 @@ interface postCreatePostIF {
 }
 class PostsController {
   public async getAllPost(req: express.Request, res: express.Response) {
+    const { sort } = req.query as { [key: string]: string };
+    const sortKeyword: 1 | -1 = decodeURI(sort) === "1" ? 1 : -1
+
     const allPostData = await Post.find({
       isDeleted: false,
     })
@@ -30,7 +33,7 @@ class PostsController {
         }
       })
       .select("+createdAt")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: sortKeyword });
     successHandle(req, res, allPostData);
   }
   public async getPersonPost(
