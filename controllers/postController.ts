@@ -136,14 +136,20 @@ class PostsController {
     const _postData = await Post.findOne({ _id: postId, isDeleted: false })
       .populate({
         path: "creator",
-        select: "nickName avatar",
+        select: "nickName avatar sex",
         match: { isDeleted: { $eq: false } }
       })
       .populate({
         path: "comments",
         select: "creator comment",
-        match: { isDeleted: { $eq: false } }
-      }).catch((error) => {
+        match: { isDeleted: { $eq: false } },
+        populate: {
+          path: "creator",
+          select: "nickName avatar sex"
+        }
+      })
+      .select("+createdAt")
+      .catch((error) => {
         return next(ErrorHandle.appError("400", "沒有找到貼文", next));
       });
 
