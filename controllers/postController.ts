@@ -163,31 +163,48 @@ class PostsController {
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
-  ){
-    const { q } = req.query as {[key:string]:string};
-    
-    if(!q){
+  ) {
+    const { q, sort } = req.query as { [key: string]: string };
+
+    if (!q || !sort) {
       return next(ErrorHandle.appError("400", "沒有找到檢索條件", next));
     }
 
-    const keyword = decodeURI(q);
+    const keyword: string = decodeURI(q);
+    const sortKeyword: 1 | -1 = decodeURI(sort) === "1" ? 1 : -1
 
     console.log(keyword);
-    
+
     const regex = new RegExp(keyword);
     const _searchResult = await Post.find({
       content:{ $regex:regex },
-      isDeleted:false
+      isDeleted: false,
     })
+      .populate({
+        path: "creator",
+        select: "nickName avatar sex",
+        match: { isDeleted: { $eq: false } }
+      })
+      .populate({
+        path: "comments",
+        select: "creator comment",
+        match: { isDeleted: { $eq: false } },
+        populate: {
+          path: "creator",
+          select: "nickName avatar sex"
+        }
+      })
+      .select("+createdAt")
+      .sort({ "createAt": sortKeyword });
 
     console.log(_searchResult);
 
-    if(!_searchResult){
+    if (!_searchResult) {
       return next(ErrorHandle.appError("400", "沒找到內容", next));
     }
 
     successHandle(req, res, _searchResult);
-    
+
   }
 }
 
