@@ -23,7 +23,11 @@ class PostsController {
       .populate({
         path: "comments",
         select: "creator comment",
-        match: { isDeleted: { $eq: false } }
+        match: { isDeleted: { $eq: false } },
+        populate: {
+          path: "creator",
+          select: "nickName avatar sex"
+        }
       })
       .select('+createdAt')
       .sort({ createdAt: -1 });
