@@ -173,8 +173,6 @@ class PostsController {
     const keyword: string = decodeURI(q);
     const sortKeyword: 1 | -1 = decodeURI(sort) === "1" ? 1 : -1
 
-    console.log(keyword);
-
     const regex = new RegExp(keyword);
     const _searchResult = await Post.find({
       content:{ $regex:regex },
@@ -195,9 +193,9 @@ class PostsController {
         }
       })
       .select("+createdAt")
-      .sort({ "createAt": sortKeyword });
+      .sort({ createdAt: sortKeyword });
 
-    console.log(_searchResult);
+    // console.log(_searchResult);
 
     if (!_searchResult) {
       return next(ErrorHandle.appError("400", "沒找到內容", next));
