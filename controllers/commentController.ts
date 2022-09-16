@@ -41,7 +41,7 @@ class CommentController {
       return next(ErrorHandle.appError("400", "新增留言失敗", next));
     }
 
-    const query = { _id: postId ,isDeleted: false};
+    const query = { _id: postId, isDeleted: false };
     const updateDocument = {
       $addToSet: { comments: _createResult.id },
       upsert: true,
@@ -102,34 +102,34 @@ class CommentController {
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
-  ){
-    const commentId:mongoose.Types.ObjectId = req.body["commentId"];
+  ) {
+    const commentId: mongoose.Types.ObjectId = req.body["commentId"];
     const comment: string = req.body["comment"];
 
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
 
     const _updateResult = await Comment.findOneAndUpdate({
-      _id:commentId,
-      creator:userId,
-      isDeleted:false
-    },{
-      comment:comment
+      _id: commentId,
+      creator: userId,
+      isDeleted: false
+    }, {
+      comment: comment
     },
-    { upsert: true, returnOriginal: false, runValidators: true })
-    .catch((error) => {
-      return next(ErrorHandle.appError("400", "更新失敗", next));
-    });
+      { upsert: true, returnOriginal: false, runValidators: true })
+      .catch((error) => {
+        return next(ErrorHandle.appError("400", "更新失敗", next));
+      });
 
     console.log(_updateResult);
 
     if (!_updateResult) {
       return next(ErrorHandle.appError("400", "更新失敗", next));
     }
-    
+
     successHandle(req, res, {
       message: "更新成功"
     });
-    
+
   }
 }
 
