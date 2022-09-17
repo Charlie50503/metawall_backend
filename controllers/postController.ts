@@ -1,6 +1,5 @@
 import { PostCollectionInsert, PostCollectionSelect, PostCollectionUpdate } from './../resources/postCollection';
 import express from "express";
-import Post from "../models/postModel";
 import { JWT } from "../services/jwt";
 import { successHandle } from "../services/successHandle";
 import mongoose from "mongoose";
