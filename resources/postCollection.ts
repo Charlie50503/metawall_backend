@@ -1,4 +1,3 @@
-import { PostCollectionSelect } from './postCollection';
 import mongoose from "mongoose";
 import Post from "../models/postModel";
 
