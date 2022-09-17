@@ -32,6 +32,11 @@ class PostsController {
           select: "nickName avatar sex"
         }
       })
+      .populate({
+        path: "likes",
+        select: "nickName avatar sex",
+        match: { isDeleted: { $eq: false } },
+      })
       .select("+createdAt")
       .sort({ createdAt: sortKeyword });
     successHandle(req, res, allPostData);
