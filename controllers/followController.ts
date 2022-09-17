@@ -59,14 +59,21 @@ class FollowController {
 
     const isUserDataExist = await FollowCollectionSelect.findUserData(userId);
 
-    console.log("isUserDataExist",isUserDataExist);
-    
     if (isUserDataExist?.length > 0) {
+      const _isFollowing= await FollowCollectionSelect.findFollowingInUser(userId, targetId).catch((error) => {
+        return next(ErrorHandle.appError("400", "不存在該USER", next));
+      });
+
+      if(_isFollowing){
+        return next(ErrorHandle.appError("400", "已追蹤了", next));
+      }
+
       const _updateResult = await FollowCollectionUpdate.addUserInFollow(userId, targetId).catch(
         (error) => {
           return next(ErrorHandle.appError("400", "添加失敗", next));
         }
       );
+      
       if (_updateResult?.acknowledged === false) {
         return next(ErrorHandle.appError("400", "添加失敗", next));
       }

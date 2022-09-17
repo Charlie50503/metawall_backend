@@ -3,6 +3,12 @@ import Comment from "../models/commentModel";
 import Follow from "../models/followModel";
 
 export class FollowCollectionSelect {
+  public static async findFollowingInUser(userId: mongoose.Types.ObjectId, targetId: mongoose.Types.ObjectId) {
+    return Follow.findOne({ user: userId, isDeleted: false,
+        following: { $in: [targetId] }
+    })
+  }
+
   public static async findFollowById(userId: mongoose.Types.ObjectId) {
     return Follow.findOne({ _id: userId, isDeleted: false })
   }
