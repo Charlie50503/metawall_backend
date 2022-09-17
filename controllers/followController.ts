@@ -1,7 +1,10 @@
+import { FollowCollectionInsert, FollowCollectionUpdate } from './../resources/followCollection';
+import { UserCollectionSelect } from './../resources/userCollection';
 import express from "express";
 import mongoose from "mongoose";
 import Follow from "../models/followModel";
 import User from "../models/userModel";
+import { FollowCollectionSelect } from "../resources/followCollection";
 import { ErrorHandle } from "../services/errorHandle/errorHandle";
 import { JWT } from "../services/jwt";
 import { successHandle } from "../services/successHandle";
@@ -17,10 +20,7 @@ class FollowController {
       return next(ErrorHandle.appError("400", "沒找到 targetId", next));
     }
 
-    const _result = await Follow.find({
-      user: targetId,
-      isDeleted: false,
-    }).catch((error) => {
+    const _result = await FollowCollectionSelect.findFollowList(targetId).catch((error) => {
       return next(ErrorHandle.appError("400", "沒有找到內容", next));
     });
 
@@ -40,9 +40,12 @@ class FollowController {
       return next(ErrorHandle.appError("400", "沒找到 targetId", next));
     }
 
-    const isUserExist = await User.findOne({ _id: targetId, isDeleted: false }).catch((error) => {
+    const isUserExist = await UserCollectionSelect.findUserById(targetId).catch((error) => {
       return next(ErrorHandle.appError("400", "不存在該USER", next));
     });
+
+    console.log("isUserExist",isUserExist);
+    
 
     if (!isUserExist) {
       return next(ErrorHandle.appError("400", "不存在該USER", next));
@@ -54,17 +57,12 @@ class FollowController {
       return next(ErrorHandle.appError("400", "不能追蹤自己", next));
     }
 
-    const isUserDataExist = await Follow.find({ user: userId, isDeleted: false });
+    const isUserDataExist = await FollowCollectionSelect.findUserData(userId);
 
+    console.log("isUserDataExist",isUserDataExist);
+    
     if (isUserDataExist?.length > 0) {
-      const query = { user: userId, isDeleted: false };
-      const updateDocument = {
-        $push: { following: targetId },
-        upsert: true,
-        returnOriginal: false,
-        runValidators: true,
-      };
-      const _updateResult = await Follow.updateOne(query, updateDocument).catch(
+      const _updateResult = await FollowCollectionUpdate.addUserInFollow(userId, targetId).catch(
         (error) => {
           return next(ErrorHandle.appError("400", "添加失敗", next));
         }
@@ -73,19 +71,19 @@ class FollowController {
         return next(ErrorHandle.appError("400", "添加失敗", next));
       }
     } else {
-      await Follow.create({
-        user: userId,
-        following: [targetId],
-      }).catch((error) => {
+      await FollowCollectionInsert.createFollow(userId, targetId).catch((error) => {
         return next(ErrorHandle.appError("400", "新增失敗", next));
       });
     }
 
-    const _result = await Follow.findOne({_id:userId,isDeleted:false}).catch((error) => {
+    const _result = await FollowCollectionSelect.findUserData(userId).catch((error) => {
       return next(ErrorHandle.appError("400", "沒找到對象USER", next));
     });
 
-    if(!_result){
+    console.log("_result",_result);
+    
+
+    if (!_result) {
       return next(ErrorHandle.appError("400", "沒找到對象USER", next));
     }
 
@@ -105,7 +103,7 @@ class FollowController {
       return next(ErrorHandle.appError("400", "沒找到 targetId", next));
     }
 
-    const isUserExist = await User.findOne({ _id: targetId, isDeleted: false }).catch((error) => {
+    const isUserExist = await UserCollectionSelect.findUserById(targetId).catch((error) => {
       return next(ErrorHandle.appError("400", "不存在該USER", next));
     });
 
@@ -119,14 +117,14 @@ class FollowController {
       return next(ErrorHandle.appError("400", "不能刪除自己", next));
     }
 
-    const _findResult = await Follow.findOne({ user: userId, isDeleted: false }).catch(error=>{
+    const _findResult = await FollowCollectionSelect.findFollowById(userId).catch(error => {
       return next(ErrorHandle.appError("400", "沒有找到資料", next));
     });
 
-    if(!_findResult){
+    if (!_findResult) {
       return next(ErrorHandle.appError("400", "沒有找到資料", next));
     }
-    
+
     const { following } = _findResult;
     if (!following) {
       return next(ErrorHandle.appError("400", "處理不正確", next));
@@ -137,12 +135,10 @@ class FollowController {
       return next(ErrorHandle.appError("400", "已刪除該對象", next));
     }
     following.splice(targetIndex);
-    const _updateResult = await Follow.findOneAndUpdate(
-      { user: userId, isDeleted: false },
-      { following }
-    ).catch((error) => {
-      return next(ErrorHandle.appError("400", "刪除失敗", next));
-    });
+    const _updateResult = await FollowCollectionUpdate.sliceFollowTarget(userId, following)
+      .catch((error) => {
+        return next(ErrorHandle.appError("400", "刪除失敗", next));
+      });
     console.log("_updateResult", _updateResult);
     successHandle(req, res, _updateResult);
   }
