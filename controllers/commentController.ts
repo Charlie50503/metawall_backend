@@ -1,3 +1,5 @@
+import { CommentCollectionInsert, CommentCollectionSelect, CommentCollectionUpdate } from './../resources/commentCollection';
+import { PostCollectionSelect, PostCollectionUpdate } from './../resources/postCollection';
 import express from "express";
 import mongoose from "mongoose";
 import { ErrorHandle } from "../services/errorHandle/errorHandle";
@@ -17,7 +19,7 @@ class CommentController {
       return next(ErrorHandle.appError("400", "沒找到 postId", next));
     }
 
-    const _isPostExist = await Post.findOne({ _id: postId, isDeleted: false }).catch((error) => {
+    const _isPostExist = await PostCollectionSelect.findOnePost(postId).catch((error) => {
       return next(ErrorHandle.appError("400", "沒有找到貼文", next));
     });
 
@@ -29,11 +31,7 @@ class CommentController {
 
     const comment: string = req.body["comment"];
 
-    const _createResult = await Comment.create({
-      creator: userId,
-      postId,
-      comment,
-    }).catch((error) => {
+    const _createResult = await CommentCollectionInsert.createComment(postId, userId, comment).catch((error) => {
       return next(ErrorHandle.appError("400", "新增留言失敗", next));
     });
 
@@ -41,27 +39,13 @@ class CommentController {
       return next(ErrorHandle.appError("400", "新增留言失敗", next));
     }
 
-    const query = { _id: postId, isDeleted: false };
-    const updateDocument = {
-      $addToSet: { comments: _createResult.id },
-      upsert: true,
-      returnOriginal: false,
-      runValidators: true,
-    };
-    const _updateResult = await Post.updateOne(
-      query,
-      updateDocument,
-    );
+    const _updateResult = await PostCollectionUpdate.addCommentInPost(postId, _createResult.id)
     if (_updateResult?.acknowledged === false) {
       return next(ErrorHandle.appError("400", "添加失敗", next));
     }
 
-    const _findCreatedCommentResult = await Comment.findById(_createResult.id).populate(
-      {
-        path: "creator",
-        select: "nickName avatar sex"
-      })
-      
+    const _findCreatedCommentResult = await CommentCollectionSelect.findCommentAndCreatorInfoById(_createResult.id)
+
     successHandle(req, res, {
       comment: _findCreatedCommentResult
     });
@@ -78,7 +62,7 @@ class CommentController {
       return next(ErrorHandle.appError("400", "沒找到 commentId", next));
     }
 
-    const _isCommentExist = await Comment.findOne({ _id: commentId, isDeleted: false }).catch((error) => {
+    const _isCommentExist = await CommentCollectionSelect.findOneCommentById(commentId).catch((error) => {
       return next(ErrorHandle.appError("400", "留言不存在", next));
     });
 
@@ -86,9 +70,9 @@ class CommentController {
       return next(ErrorHandle.appError("400", "留言不存在", next));
     }
 
-    const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
+    // const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
 
-    const _updateResult = await Comment.findByIdAndUpdate(commentId, { isDeleted: true }).catch((error) => {
+    const _updateResult = await CommentCollectionUpdate.deleteCommentById(commentId).catch((error) => {
       return next(ErrorHandle.appError("400", "更新失敗", next));
     });
 
@@ -108,14 +92,7 @@ class CommentController {
 
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
 
-    const _updateResult = await Comment.findOneAndUpdate({
-      _id: commentId,
-      creator: userId,
-      isDeleted: false
-    }, {
-      comment: comment
-    },
-      { upsert: true, returnOriginal: false, runValidators: true })
+    const _updateResult = await CommentCollectionUpdate.updateCommentContentById(commentId,userId,comment)
       .catch((error) => {
         return next(ErrorHandle.appError("400", "更新失敗", next));
       });

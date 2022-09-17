@@ -118,6 +118,19 @@ export class PostCollectionSelect {
 }
 
 export class PostCollectionUpdate {
+  public static async addCommentInPost(postId: mongoose.Types.ObjectId, commentUserId: mongoose.Types.ObjectId){
+    const query = { _id: postId, isDeleted: false };
+    const updateDocument = {
+      $addToSet: { comments: commentUserId },
+      upsert: true,
+      returnOriginal: false,
+      runValidators: true,
+    };
+    return Post.updateOne(
+      query,
+      updateDocument,
+    );
+  }
   public static async addLikeInPost(postId: mongoose.Types.ObjectId, userId: mongoose.Types.ObjectId) {
     const query = { _id: postId, isDeleted: false };
     const updateDocument = {
