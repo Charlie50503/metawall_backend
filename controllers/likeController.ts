@@ -56,19 +56,51 @@ class LikeController {
       returnOriginal: false,
       runValidators: true,
     };
-    const _updateResult = await Post.updateOne(
+    const _doUpdateResult = await Post.updateOne(
       query,
       updateDocument,
     );
 
-    console.log("_updateResult",_updateResult);
-    if(_updateResult?.acknowledged===true && _updateResult?.modifiedCount===0){
+    console.log("_doUpdateResult",_doUpdateResult);
+    if(_doUpdateResult?.acknowledged===true && _doUpdateResult?.modifiedCount===0){
       return next(ErrorHandle.appError("400", "已添加過like", next));
     }
-    if (_updateResult?.acknowledged === false) {
+    if (_doUpdateResult?.acknowledged === false) {
       return next(ErrorHandle.appError("400", "添加失敗", next));
     }
+
+    // response data
+    const _updatedResult = await Post.findOne({
+      _id: postId,
+      isDeleted:false 
+    })
+      .populate({
+        path: "creator",
+        select: "nickName avatar sex",
+        match: { isDeleted: { $eq: false } }
+      })
+      .populate({
+        path: "comments",
+        select: "creator comment",
+        match: { isDeleted: { $eq: false } },
+        populate: {
+          path: "creator",
+          select: "nickName avatar sex"
+        }
+      })
+      .populate({
+        path: "likes",
+        select: "nickName avatar sex",
+        match: { isDeleted: { $eq: false } },
+        populate: {
+          path: "user",
+          select: "nickName avatar sex"
+        }
+      })
+      .select("+createdAt")
+
     successHandle(req, res, {
+      post:_updatedResult,
       message: "新增成功"
     });
   }
