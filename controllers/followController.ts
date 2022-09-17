@@ -1,7 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
 import Follow from "../models/followModel";
-import { FollowModelDto } from "../models/interface/follow";
 import User from "../models/userModel";
 import { ErrorHandle } from "../services/errorHandle/errorHandle";
 import { JWT } from "../services/jwt";
