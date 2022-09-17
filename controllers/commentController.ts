@@ -3,8 +3,6 @@ import { PostCollectionSelect, PostCollectionUpdate } from './../resources/postC
 import express from "express";
 import mongoose from "mongoose";
 import { ErrorHandle } from "../services/errorHandle/errorHandle";
-import Comment from "../models/commentModel";
-import Post from "../models/postModel";
 import { JWT } from "../services/jwt";
 import { successHandle } from "../services/successHandle";
 class CommentController {
