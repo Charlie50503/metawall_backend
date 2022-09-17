@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+import { UserCollectionSelect, UserCollectionInsert, UserCollectionUpdate } from './../resources/userCollection';
 import { JWT } from "./../services/jwt";
 import express from "express";
 import User from "../models/userModel";
@@ -6,7 +8,7 @@ import { ErrorHandle } from "../services/errorHandle/errorHandle";
 import { UserModelDto } from "../models/interface/user";
 import bcrypt from "bcryptjs";
 
-interface updateProfileIF {
+export interface updateProfileIF {
   nickName: string;
   sex: string;
   avatar?: string;
@@ -18,11 +20,11 @@ interface updatePasswordIF {
 
 class UsersController {
   public async getProfile(req: express.Request, res: express.Response, next: express.NextFunction) {
-    const { id } = req.params;
+    const id = req.params["id"] as unknown as mongoose.Types.ObjectId;
     if (!id) {
       return next(ErrorHandle.appError("400", "沒有找到對象ID", next));
     }
-    const result: UserModelDto | null = await User.findById(id);
+    const result: UserModelDto | null = await UserCollectionSelect.findUserById(id);
     if (!result) {
       return next(ErrorHandle.appError("400", "沒有找到對象USER", next));
     }
@@ -36,7 +38,7 @@ class UsersController {
   ) {
     const { nickName, sex, avatar } = req.body as updateProfileIF;
 
-    const userId = await JWT.decodeTokenGetId(req, res, next);
+    const userId = await JWT.decodeTokenGetId(req, res, next) as mongoose.Types.ObjectId;
     console.log("userId", userId);
 
     const updateData: updateProfileIF = {
@@ -46,11 +48,7 @@ class UsersController {
     if (avatar?.length !== 0) {
       updateData["avatar"] = avatar;
     }
-    const _result = await User.findByIdAndUpdate(userId, updateData, {
-      upsert: true,
-      returnOriginal: false,
-      runValidators: true,
-    });
+    const _result = await UserCollectionUpdate.findUserAndUpdate(userId, updateData);
     if (!_result) {
       return next(ErrorHandle.appError("400", "更新失敗", next));
     }
@@ -66,7 +64,7 @@ class UsersController {
     const { password, confirmPassword } = req.body as updatePasswordIF;
 
     const bcryptPassword = await bcrypt.hash(password, 12);
-    const userId = await JWT.decodeTokenGetId(req, res, next);
+    const userId = await JWT.decodeTokenGetId(req, res, next) as mongoose.Types.ObjectId;
 
     const _result = await User.findByIdAndUpdate(userId, {
       password: bcryptPassword,
@@ -83,15 +81,11 @@ class UsersController {
 
   public async postSignUp(req: express.Request, res: express.Response, next: express.NextFunction) {
     const { email, password: originPassword, nickName } = req.body;
-    if (await User.findOne({ email })) {
+    if (await UserCollectionSelect.findEmail(email)) {
       return next(ErrorHandle.appError("400", "此 Email 已被註冊", next));
     }
     const password = await bcrypt.hash(originPassword, 12);
-    const _result = await User.create({
-      nickName,
-      email,
-      password,
-    });
+    const _result = await UserCollectionInsert.createUser(nickName, email, password)
     if (!_result) {
       return next(ErrorHandle.appError("400", "不明原因錯誤", next));
     }
@@ -104,7 +98,7 @@ class UsersController {
 
   public async postSignIn(req: express.Request, res: express.Response, next: express.NextFunction) {
     const { email, password } = req.body;
-    const user = await User.findOne({ email }).select("+password");
+    const user = await UserCollectionSelect.findUserIncludePasswordByEmail(email)
     if (!user) {
       return next(ErrorHandle.appError("400", "帳號或密碼錯誤", next));
     }
