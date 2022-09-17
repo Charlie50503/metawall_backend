@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { updateProfileIF } from "../controllers/userController";
-import Comment from "../models/commentModel";
 import User from "../models/userModel";
 
 export class UserCollectionSelect {
@@ -9,13 +8,6 @@ export class UserCollectionSelect {
   }
   public static async findUserById(userId: mongoose.Types.ObjectId) {
     return User.findOne({ _id: userId, isDeleted: false });
-  }
-  public static async findCommentAndCreatorInfoById(commentId: mongoose.Types.ObjectId) {
-    return Comment.findById(commentId).populate(
-      {
-        path: "creator",
-        select: "nickName avatar sex"
-      })
   }
 
   public static async findUserIncludePasswordByEmail(email: string) {
@@ -31,6 +23,13 @@ export class UserCollectionUpdate {
       returnOriginal: false,
       runValidators: true,
     });
+  }
+
+  public static async updateUserPassword(userId: mongoose.Types.ObjectId, bcryptPassword: string) {
+    return User.findByIdAndUpdate(userId, {
+      password: bcryptPassword,
+    });
+
   }
 }
 

@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { UserCollectionSelect, UserCollectionInsert, UserCollectionUpdate } from './../resources/userCollection';
 import { JWT } from "./../services/jwt";
 import express from "express";
-import User from "../models/userModel";
 import { successHandle } from "../services/successHandle";
 import { ErrorHandle } from "../services/errorHandle/errorHandle";
 import { UserModelDto } from "../models/interface/user";
@@ -66,10 +65,7 @@ class UsersController {
     const bcryptPassword = await bcrypt.hash(password, 12);
     const userId = await JWT.decodeTokenGetId(req, res, next) as mongoose.Types.ObjectId;
 
-    const _result = await User.findByIdAndUpdate(userId, {
-      password: bcryptPassword,
-    });
-
+    const _result = await UserCollectionUpdate.updateUserPassword(userId,bcryptPassword)
     if (!_result) {
       return next(ErrorHandle.appError("400", "密碼更新失敗", next));
     }
