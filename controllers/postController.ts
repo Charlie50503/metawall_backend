@@ -1,3 +1,4 @@
+import { PostCollectionInsert, PostCollectionSelect, PostCollectionUpdate } from './../resources/postCollection';
 import express from "express";
 import Post from "../models/postModel";
 import { JWT } from "../services/jwt";
@@ -15,30 +16,8 @@ class PostsController {
     const { sort } = req.query as { [key: string]: string };
     const sortKeyword: 1 | -1 = decodeURI(sort) === "1" ? 1 : -1
 
-    const allPostData = await Post.find({
-      isDeleted: false,
-    })
-      .populate({
-        path: "creator",
-        select: "nickName avatar sex",
-        match: { isDeleted: { $eq: false } }
-      })
-      .populate({
-        path: "comments",
-        select: "creator comment",
-        match: { isDeleted: { $eq: false } },
-        populate: {
-          path: "creator",
-          select: "nickName avatar sex"
-        }
-      })
-      .populate({
-        path: "likes",
-        select: "nickName avatar sex",
-        match: { isDeleted: { $eq: false } },
-      })
-      .select("+createdAt")
-      .sort({ createdAt: sortKeyword });
+    const allPostData = await PostCollectionSelect.findAllPostList(sortKeyword)
+
     successHandle(req, res, allPostData);
   }
   public async getPersonPost(
@@ -47,22 +26,11 @@ class PostsController {
     next: express.NextFunction
   ) {
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
-    const allPostData = await Post.find({
-      creator: userId,
-      isDeleted: false,
-    })
-      .populate({
-        path: "creator",
-        select: "nickName avatar",
-        match: { isDeleted: { $eq: false } }
-      })
-      .populate({
-        path: "comments",
-        select: "creator comment",
-        match: { isDeleted: { $eq: false } }
-      })
-      .sort({ createdAt: -1 });
-    successHandle(req, res, allPostData);
+    const { sort } = req.query as { [key: string]: string };
+    const sortKeyword: 1 | -1 = decodeURI(sort) === "1" ? 1 : -1
+
+    const _allPostData = await PostCollectionSelect.findPersonalPostList(userId, sortKeyword)
+    successHandle(req, res, _allPostData);
   }
 
   public async postCreatePost(
@@ -73,11 +41,7 @@ class PostsController {
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
     const { content, imgURL } = req.body as postCreatePostIF;
 
-    const _result = await Post.create({
-      creator: userId,
-      content,
-      imgURL,
-    });
+    const _result = await PostCollectionInsert.createPost(userId, content, imgURL)
 
     if (!_result) {
       return next(ErrorHandle.appError("400", "更新失敗", next));
@@ -90,14 +54,14 @@ class PostsController {
     res: express.Response,
     next: express.NextFunction
   ) {
-    const { postId } = req.params;
+    const postId = req.params["postId"] as unknown as mongoose.Types.ObjectId;
     if (!postId) {
       return next(ErrorHandle.appError("400", "沒找到 postId", next));
     }
 
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
 
-    const _isPostExist = await Post.findOne({ _id: postId, isDeleted: false }).catch(error => {
+    const _isPostExist = await PostCollectionSelect.findOnePost(postId).catch(error => {
       return next(ErrorHandle.appError("400", "沒找到可刪除貼文", next));
     })
 
@@ -106,15 +70,7 @@ class PostsController {
     }
 
     try {
-      const _result: PostModelDto = await Post.findOneAndUpdate(
-        {
-          _id: postId,
-          creator: userId,
-          isDeleted: false,
-        },
-        { isDeleted: true },
-        { upsert: true, returnOriginal: false, runValidators: true }
-      );
+      const _result: PostModelDto = await PostCollectionUpdate.deletePost(postId, userId);
 
       if (!_result) {
         return next(ErrorHandle.appError("400", "刪除失敗", next));
@@ -141,25 +97,9 @@ class PostsController {
       return next(ErrorHandle.appError("400", "沒找到 postId", next));
     }
 
-    const _postData = await Post.findOne({ _id: postId, isDeleted: false })
-      .populate({
-        path: "creator",
-        select: "nickName avatar sex",
-        match: { isDeleted: { $eq: false } }
-      })
-      .populate({
-        path: "comments",
-        select: "creator comment",
-        match: { isDeleted: { $eq: false } },
-        populate: {
-          path: "creator",
-          select: "nickName avatar sex"
-        }
-      })
-      .select("+createdAt")
-      .catch((error) => {
-        return next(ErrorHandle.appError("400", "沒有找到貼文", next));
-      });
+    const _postData = await PostCollectionSelect.findOnePostWithFullData(postId).catch((error) => {
+      return next(ErrorHandle.appError("400", "沒有找到貼文", next));
+    });
 
     if (!_postData) {
       return next(ErrorHandle.appError("400", "沒有找到貼文", next));
@@ -182,28 +122,7 @@ class PostsController {
     const sortKeyword: 1 | -1 = decodeURI(sort) === "1" ? 1 : -1
 
     const regex = new RegExp(keyword);
-    const _searchResult = await Post.find({
-      content:{ $regex:regex },
-      isDeleted: false,
-    })
-      .populate({
-        path: "creator",
-        select: "nickName avatar sex",
-        match: { isDeleted: { $eq: false } }
-      })
-      .populate({
-        path: "comments",
-        select: "creator comment",
-        match: { isDeleted: { $eq: false } },
-        populate: {
-          path: "creator",
-          select: "nickName avatar sex"
-        }
-      })
-      .select("+createdAt")
-      .sort({ createdAt: sortKeyword });
-
-    // console.log(_searchResult);
+    const _searchResult = await PostCollectionSelect.searchPostList(regex, sortKeyword)
 
     if (!_searchResult) {
       return next(ErrorHandle.appError("400", "沒找到內容", next));
