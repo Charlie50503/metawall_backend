@@ -10,6 +10,7 @@ import postRouter from "./routes/post";
 import followRouter from "./routes/follow";
 import commentRouter from "./routes/comment";
 import likeRouter from "./routes/like";
+import uploadRouter from "./routes/upload";
 // const cors = require('cors');
 import cors from "cors"
 
@@ -42,6 +43,7 @@ app.use("/post", postRouter);
 app.use("/follow", followRouter);
 app.use("/comment", commentRouter);
 app.use("/like", likeRouter);
+app.use("/upload", uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
