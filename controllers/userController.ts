@@ -18,6 +18,15 @@ interface updatePasswordIF {
 }
 
 class UsersController {
+  public async getCheckIsUser(req: express.Request, res: express.Response, next: express.NextFunction) {
+    const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
+  
+    const result = {
+      _id:userId
+    }
+
+    return successHandle(req, res, result);
+  }
   public async getProfile(req: express.Request, res: express.Response, next: express.NextFunction) {
     const id = req.params["id"] as unknown as mongoose.Types.ObjectId;
     if (!id) {
@@ -106,6 +115,7 @@ class UsersController {
     successHandle(req, res, {
       token,
       nickName: user.nickName,
+      _id:user.id
     });
   }
 }

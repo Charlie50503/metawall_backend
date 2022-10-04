@@ -32,9 +32,8 @@ router.post(
   RequestParams.signUp,
   ErrorHandle.handleErrorAsync(UsersController.postSignUp)
 );
-router.get("/check-is-user", Auth.checkToken, (req: express.Request, res: express.Response) => {
-  res.status(200).json({
-    message: "驗證成功",
-  });
-});
+router.get(
+  "/check-is-user",
+  Auth.checkToken,
+  ErrorHandle.handleErrorAsync(UsersController.getCheckIsUser));
 export default router;
