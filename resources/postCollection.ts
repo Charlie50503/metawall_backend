@@ -91,6 +91,22 @@ export class PostCollectionSelect {
       likes: userId,
       isDeleted: false
     })
+      .populate({
+        path: "creator",
+        select: "nickName avatar sex",
+        match: { isDeleted: { $eq: false } }
+      })
+      .populate({
+        path: "comments",
+        select: "creator comment",
+        match: { isDeleted: { $eq: false } },
+        populate: {
+          path: "creator",
+          select: "nickName avatar sex"
+        }
+      })
+      .select("+createdAt")
+      .sort({ createdAt: -1 });
   }
 
   public static async searchPostList(regex: RegExp, sortKeyword: 1 | -1) {
@@ -118,7 +134,7 @@ export class PostCollectionSelect {
 }
 
 export class PostCollectionUpdate {
-  public static async addCommentInPost(postId: mongoose.Types.ObjectId, commentUserId: mongoose.Types.ObjectId){
+  public static async addCommentInPost(postId: mongoose.Types.ObjectId, commentUserId: mongoose.Types.ObjectId) {
     const query = { _id: postId, isDeleted: false };
     const updateDocument = {
       $addToSet: { comments: commentUserId },
