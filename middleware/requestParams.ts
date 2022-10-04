@@ -36,8 +36,8 @@ export default class RequestParams {
     res: express.Response,
     next: express.NextFunction
   ) {
-    const { content, imgURL } = req.body;
-    CheckValidator.checkerParams({ content, imgURL });
+    const { content, imgUrl } = req.body;
+    CheckValidator.checkerParams({ content, imgUrl });
     next();
   }
   public static postCreateComment(

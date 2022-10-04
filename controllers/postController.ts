@@ -8,7 +8,7 @@ import { PostModelDto } from "../models/interface/post";
 
 interface postCreatePostIF {
   content: string;
-  imgURL: string;
+  imgUrl: string;
 }
 class PostsController {
   public async getAllPost(req: express.Request, res: express.Response) {
@@ -38,9 +38,9 @@ class PostsController {
     next: express.NextFunction
   ) {
     const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
-    const { content, imgURL } = req.body as postCreatePostIF;
+    const { content, imgUrl } = req.body as postCreatePostIF;
 
-    const _result = await PostCollectionInsert.createPost(userId, content, imgURL)
+    const _result = await PostCollectionInsert.createPost(userId, content, imgUrl)
 
     if (!_result) {
       return next(ErrorHandle.appError("400", "更新失敗", next));

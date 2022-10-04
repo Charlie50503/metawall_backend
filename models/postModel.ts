@@ -15,7 +15,7 @@ const postsSchema = new mongoose.Schema<PostModelDto>(
       required: [true, "請填寫貼文內容"],
       trim: true,
     },
-    imgURL: {
+    imgUrl: {
       type: String,
       trim: true,
     },

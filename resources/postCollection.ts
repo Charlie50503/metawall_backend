@@ -174,11 +174,11 @@ export class PostCollectionUpdate {
 }
 
 export class PostCollectionInsert {
-  public static async createPost(userId: mongoose.Types.ObjectId, content: string, imgURL: string) {
+  public static async createPost(userId: mongoose.Types.ObjectId, content: string, imgUrl: string) {
     return Post.create({
       creator: userId,
       content,
-      imgURL,
+      imgUrl,
     });
   }
 }
