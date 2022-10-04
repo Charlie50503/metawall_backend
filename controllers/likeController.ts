@@ -81,18 +81,22 @@ class LikeController {
       return next(ErrorHandle.appError("400", "貼文不存在", next));
     }
 
-    const _updateResult = await PostCollectionUpdate.sliceLikeInPost(postId, userId)
-    console.log(_updateResult);
+    const _doUpdateResult = await PostCollectionUpdate.sliceLikeInPost(postId, userId)
+    console.log(_doUpdateResult);
 
-    if (_updateResult?.acknowledged === false) {
+    if (_doUpdateResult?.acknowledged === false) {
       return next(ErrorHandle.appError("400", "添加失敗", next));
     }
 
-    if (_updateResult?.acknowledged === true && _updateResult?.modifiedCount === 0) {
+    if (_doUpdateResult?.acknowledged === true && _doUpdateResult?.modifiedCount === 0) {
       return next(ErrorHandle.appError("400", "已刪除like", next));
     }
 
+    // response data
+    const _updatedResult = await PostCollectionSelect.findOnePostWithFullData(postId)
+
     successHandle(req, res, {
+      post: _updatedResult,
       message: "刪除成功"
     });
   }
