@@ -98,6 +98,7 @@ class UsersController {
     successHandle(req, res, {
       token,
       nickName: _result.nickName,
+      _id:_result.id
     });
   }
 
