@@ -9,12 +9,12 @@ export class FollowCollectionSelect {
     })
   }
 
-  public static async findFollowById(userId: mongoose.Types.ObjectId) {
-    return Follow.findOne({ _id: userId, isDeleted: false })
+  public static async findFollowByUserId(userId: mongoose.Types.ObjectId) {
+    return Follow.findOne({ user: userId, isDeleted: false })
   }
 
   public static async findFollowList(targetId: mongoose.Types.ObjectId) {
-    return Follow.find({
+    return Follow.findOne({
       user: targetId,
       isDeleted: false,
     })
@@ -28,7 +28,7 @@ export class FollowCollectionSelect {
   }
 
   public static async findUserData(userId: mongoose.Types.ObjectId) {
-    return Follow.find({ user: userId, isDeleted: false })
+    return Follow.findOne({ user: userId, isDeleted: false })
   }
 }
 
