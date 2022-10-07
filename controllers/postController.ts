@@ -103,7 +103,7 @@ class PostsController {
     if (!_postData) {
       return next(ErrorHandle.appError("400", "沒有找到貼文", next));
     }
-    successHandle(req, res, _postData);
+    successHandle(req, res, [_postData]);
   }
 
   public async getSearchPost(
