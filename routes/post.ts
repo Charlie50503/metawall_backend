@@ -7,8 +7,10 @@ import { ErrorHandle } from "../services/errorHandle/errorHandle";
 
 router.get("/all-post", Auth.checkToken, ErrorHandle.handleErrorAsync(PostsController.getAllPost));
 router.get(
-  "/person-post",
+  "/person-post/:userId",
   Auth.checkToken,
+  ErrorHandle.handleErrorAsync(PostsController.getAllPersonPost)
+);
 router.get(
   "/search-person-post/:userId",
   Auth.checkToken,
