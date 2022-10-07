@@ -58,7 +58,8 @@ export class FollowCollectionUpdate {
   public static async sliceFollowTarget(userId: mongoose.Types.ObjectId, following: mongoose.Types.ObjectId[]) {
     return Follow.findOneAndUpdate(
       { user: userId, isDeleted: false },
-      { following })
+      { following },
+      { upsert: true, returnOriginal: false, runValidators: true })
   }
 }
 
