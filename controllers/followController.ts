@@ -59,7 +59,7 @@ class FollowController {
 
     const isUserDataExist = await FollowCollectionSelect.findUserData(userId);
 
-    if (isUserDataExist?.length > 0) {
+    if (isUserDataExist) {
       const _isFollowing= await FollowCollectionSelect.findFollowingInUser(userId, targetId).catch((error) => {
         return next(ErrorHandle.appError("400", "不存在該USER", next));
       });
@@ -124,7 +124,7 @@ class FollowController {
       return next(ErrorHandle.appError("400", "不能刪除自己", next));
     }
 
-    const _findResult = await FollowCollectionSelect.findFollowById(userId).catch(error => {
+    const _findResult = await FollowCollectionSelect.findFollowByUserId(userId).catch(error => {
       return next(ErrorHandle.appError("400", "沒有找到資料", next));
     });
 
