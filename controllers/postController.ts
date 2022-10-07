@@ -19,13 +19,19 @@ class PostsController {
 
     successHandle(req, res, allPostData);
   }
-  public async getPersonPost(
+  public async getAllPersonPost(
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
   ) {
-    const userId = (await JWT.decodeTokenGetId(req, res, next)) as mongoose.Types.ObjectId;
+    const userId = req.params["userId"] as unknown as mongoose.Types.ObjectId;
+    
     const { sort } = req.query as { [key: string]: string };
+
+    if (!sort) {
+      return next(ErrorHandle.appError("400", "沒有找到檢索條件", next));
+    }
+
     const sortKeyword: 1 | -1 = decodeURI(sort) === "1" ? 1 : -1
 
     const _allPostData = await PostCollectionSelect.findPersonalPostList(userId, sortKeyword)
