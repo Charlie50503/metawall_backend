@@ -59,6 +59,35 @@ export class PostCollectionSelect {
       .select("+createdAt")
       .sort({ createdAt: sortKeyword });
   }
+
+  public static async searchPersonalPostList(userId: mongoose.Types.ObjectId,regex: RegExp, sortKeyword: 1 | -1) {
+    return Post.find({
+      creator: userId,
+      content: { $regex: regex },
+      isDeleted: false,
+    })
+      .populate({
+        path: "creator",
+        select: "nickName avatar sex",
+        match: { isDeleted: { $eq: false } }
+      })
+      .populate({
+        path: "comments",
+        select: "creator comment",
+        match: { isDeleted: { $eq: false } },
+        populate: {
+          path: "creator",
+          select: "nickName avatar sex"
+        }
+      })
+      .populate({
+        path: "likes",
+        select: "nickName avatar sex",
+        match: { isDeleted: { $eq: false } },
+      })
+      .select("+createdAt")
+      .sort({ createdAt: sortKeyword });
+  }
   public static async findOnePostWithFullData(postId: mongoose.Types.ObjectId) {
     return Post.findOne({
       _id: postId,

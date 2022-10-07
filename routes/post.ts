@@ -9,7 +9,10 @@ router.get("/all-post", Auth.checkToken, ErrorHandle.handleErrorAsync(PostsContr
 router.get(
   "/person-post",
   Auth.checkToken,
-  ErrorHandle.handleErrorAsync(PostsController.getPersonPost)
+router.get(
+  "/search-person-post/:userId",
+  Auth.checkToken,
+  ErrorHandle.handleErrorAsync(PostsController.getSearchPersonPost)
 );
 router.post(
   "/create-post",

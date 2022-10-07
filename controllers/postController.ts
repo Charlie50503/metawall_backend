@@ -32,6 +32,28 @@ class PostsController {
     successHandle(req, res, _allPostData);
   }
 
+  public async getSearchPersonPost(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) {
+    const userId = req.params["userId"] as unknown as mongoose.Types.ObjectId;
+    
+    const { q, sort } = req.query as { [key: string]: string };
+
+    if (!q || !sort) {
+      return next(ErrorHandle.appError("400", "沒有找到檢索條件", next));
+    }
+
+    const keyword: string = decodeURI(q);
+    const sortKeyword: 1 | -1 = decodeURI(sort) === "1" ? 1 : -1
+
+    const regex = new RegExp(keyword);
+
+    const _allPostData = await PostCollectionSelect.searchPersonalPostList(userId, regex, sortKeyword)
+    successHandle(req, res, _allPostData);
+  }
+
   public async postCreatePost(
     req: express.Request,
     res: express.Response,
