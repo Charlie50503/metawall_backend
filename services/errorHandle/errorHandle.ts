@@ -12,7 +12,7 @@ export class ErrorHandle {
   };
 
   public static resErrorDev = (err: customError | any, res: express.Response) => {
-    res.status(res.statusCode).json({
+    res.status(+err.statusCode).json({
       message: err.message,
       error: err,
       stack: err.stack,
@@ -21,7 +21,7 @@ export class ErrorHandle {
 
   public static resErrorProd = (err: customError | any, res: express.Response) => {
     if (err.isOperational) {
-      res.status(err.statusCode).json({
+      res.status(+err.statusCode).json({
         message: err.message,
       });
     } else {
