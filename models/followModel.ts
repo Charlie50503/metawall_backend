@@ -12,13 +12,16 @@ const followSchema = new mongoose.Schema<FollowModelDto>(
       select: false,
       unique: true,
     },
-    following: [
-      {
+    following: [{
+      user: {
         // 別人
         type: Schema.Types.ObjectId,
         ref: "User",
       },
-    ],
+      createdAt: {
+        type: Date,
+      }
+    }],
     createdAt: {
       type: Date,
       default: Date.now,

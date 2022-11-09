@@ -136,7 +136,8 @@ class FollowController {
     if (!following) {
       return next(ErrorHandle.appError("400", "處理不正確", next));
     }
-    const targetIndex = following.findIndex((followingUserId) => followingUserId.equals(targetId));
+
+    const targetIndex = following.findIndex((follow) => follow.user.equals(targetId));
 
     if (targetIndex === -1) {
       return next(ErrorHandle.appError("400", "已刪除該對象", next));
