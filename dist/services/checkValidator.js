@@ -74,7 +74,7 @@ var CheckValidator = /** @class */ (function () {
                         throw new Error("必須是 String");
                     }
                     break;
-                case "imgURL":
+                case "imgUrl":
                     if (!lodash_1.default.isString(value)) {
                         throw new Error("必須是 String");
                     }

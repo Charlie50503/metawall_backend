@@ -13,7 +13,7 @@ var ErrorHandle = /** @class */ (function () {
         };
     };
     ErrorHandle.resErrorDev = function (err, res) {
-        res.status(res.statusCode).json({
+        res.status(+err.statusCode).json({
             message: err.message,
             error: err,
             stack: err.stack,
@@ -21,7 +21,7 @@ var ErrorHandle = /** @class */ (function () {
     };
     ErrorHandle.resErrorProd = function (err, res) {
         if (err.isOperational) {
-            res.status(err.statusCode).json({
+            res.status(+err.statusCode).json({
                 message: err.message,
             });
         }

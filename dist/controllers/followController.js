@@ -35,12 +35,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var followModel_1 = __importDefault(require("../models/followModel"));
-var userModel_1 = __importDefault(require("../models/userModel"));
+var followCollection_1 = require("./../resources/followCollection");
+var userCollection_1 = require("./../resources/userCollection");
+var followCollection_2 = require("../resources/followCollection");
 var errorHandle_1 = require("../services/errorHandle/errorHandle");
 var jwt_1 = require("../services/jwt");
 var successHandle_1 = require("../services/successHandle");
@@ -57,10 +55,7 @@ var FollowController = /** @class */ (function () {
                         if (!targetId) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "沒找到 targetId", next))];
                         }
-                        return [4 /*yield*/, followModel_1.default.find({
-                                user: targetId,
-                                isDeleted: false,
-                            }).catch(function (error) {
+                        return [4 /*yield*/, followCollection_2.FollowCollectionSelect.findFollowList(targetId).catch(function (error) {
                                 return next(errorHandle_1.ErrorHandle.appError("400", "沒有找到內容", next));
                             })];
                     case 1:
@@ -74,7 +69,7 @@ var FollowController = /** @class */ (function () {
     };
     FollowController.prototype.postAddFollowing = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var targetId, isUserExist, userId, isUserDataExist, query, updateDocument, _updateResult, _result;
+            var targetId, isUserExist, userId, isUserDataExist, _isFollowing, _updateResult, _result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -82,11 +77,12 @@ var FollowController = /** @class */ (function () {
                         if (!targetId) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "沒找到 targetId", next))];
                         }
-                        return [4 /*yield*/, userModel_1.default.findOne({ _id: targetId, isDeleted: false }).catch(function (error) {
+                        return [4 /*yield*/, userCollection_1.UserCollectionSelect.findUserById(targetId).catch(function (error) {
                                 return next(errorHandle_1.ErrorHandle.appError("400", "不存在該USER", next));
                             })];
                     case 1:
                         isUserExist = _a.sent();
+                        console.log("isUserExist", isUserExist);
                         if (!isUserExist) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "不存在該USER", next))];
                         }
@@ -96,40 +92,39 @@ var FollowController = /** @class */ (function () {
                         if (targetId === userId) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "不能追蹤自己", next))];
                         }
-                        return [4 /*yield*/, followModel_1.default.find({ user: userId, isDeleted: false })];
+                        return [4 /*yield*/, followCollection_2.FollowCollectionSelect.findUserData(userId)];
                     case 3:
                         isUserDataExist = _a.sent();
-                        if (!((isUserDataExist === null || isUserDataExist === void 0 ? void 0 : isUserDataExist.length) > 0)) return [3 /*break*/, 5];
-                        query = { user: userId, isDeleted: false };
-                        updateDocument = {
-                            $push: { following: targetId },
-                            upsert: true,
-                            returnOriginal: false,
-                            runValidators: true,
-                        };
-                        return [4 /*yield*/, followModel_1.default.updateOne(query, updateDocument).catch(function (error) {
-                                return next(errorHandle_1.ErrorHandle.appError("400", "添加失敗", next));
+                        if (!isUserDataExist) return [3 /*break*/, 6];
+                        return [4 /*yield*/, followCollection_2.FollowCollectionSelect.findFollowingInUser(userId, targetId).catch(function (error) {
+                                return next(errorHandle_1.ErrorHandle.appError("400", "不存在該USER", next));
                             })];
                     case 4:
+                        _isFollowing = _a.sent();
+                        if (_isFollowing) {
+                            return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "已追蹤了", next))];
+                        }
+                        return [4 /*yield*/, followCollection_1.FollowCollectionUpdate.addUserInFollow(userId, targetId).catch(function (error) {
+                                return next(errorHandle_1.ErrorHandle.appError("400", "添加失敗", next));
+                            })];
+                    case 5:
                         _updateResult = _a.sent();
                         if ((_updateResult === null || _updateResult === void 0 ? void 0 : _updateResult.acknowledged) === false) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "添加失敗", next))];
                         }
-                        return [3 /*break*/, 7];
-                    case 5: return [4 /*yield*/, followModel_1.default.create({
-                            user: userId,
-                            following: [targetId],
-                        }).catch(function (error) {
+                        return [3 /*break*/, 8];
+                    case 6: return [4 /*yield*/, followCollection_1.FollowCollectionInsert.createFollow(userId, targetId).catch(function (error) {
                             return next(errorHandle_1.ErrorHandle.appError("400", "新增失敗", next));
                         })];
-                    case 6:
+                    case 7:
                         _a.sent();
-                        _a.label = 7;
-                    case 7: return [4 /*yield*/, followModel_1.default.findOne({ _id: userId, isDeleted: false }).catch(function (error) {
+                        _a.label = 8;
+                    case 8: return [4 /*yield*/, followCollection_2.FollowCollectionSelect.findUserData(userId).catch(function (error) {
                             return next(errorHandle_1.ErrorHandle.appError("400", "沒找到對象USER", next));
                         })];
-                    case 8:
+                    case 9:
                         _result = _a.sent();
+                        console.log("_result", _result);
                         if (!_result) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "沒找到對象USER", next))];
                         }
@@ -150,7 +145,7 @@ var FollowController = /** @class */ (function () {
                         if (!targetId) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "沒找到 targetId", next))];
                         }
-                        return [4 /*yield*/, userModel_1.default.findOne({ _id: targetId, isDeleted: false }).catch(function (error) {
+                        return [4 /*yield*/, userCollection_1.UserCollectionSelect.findUserById(targetId).catch(function (error) {
                                 return next(errorHandle_1.ErrorHandle.appError("400", "不存在該USER", next));
                             })];
                     case 1:
@@ -164,7 +159,7 @@ var FollowController = /** @class */ (function () {
                         if (targetId === userId) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "不能刪除自己", next))];
                         }
-                        return [4 /*yield*/, followModel_1.default.findOne({ user: userId, isDeleted: false }).catch(function (error) {
+                        return [4 /*yield*/, followCollection_2.FollowCollectionSelect.findFollowByUserId(userId).catch(function (error) {
                                 return next(errorHandle_1.ErrorHandle.appError("400", "沒有找到資料", next));
                             })];
                     case 3:
@@ -176,12 +171,13 @@ var FollowController = /** @class */ (function () {
                         if (!following) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "處理不正確", next))];
                         }
-                        targetIndex = following.findIndex(function (followingUserId) { return followingUserId.equals(targetId); });
+                        targetIndex = following.findIndex(function (follow) { return follow.user.equals(targetId); });
                         if (targetIndex === -1) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "已刪除該對象", next))];
                         }
                         following.splice(targetIndex);
-                        return [4 /*yield*/, followModel_1.default.findOneAndUpdate({ user: userId, isDeleted: false }, { following: following }).catch(function (error) {
+                        return [4 /*yield*/, followCollection_1.FollowCollectionUpdate.sliceFollowTarget(userId, following)
+                                .catch(function (error) {
                                 return next(errorHandle_1.ErrorHandle.appError("400", "刪除失敗", next));
                             })];
                     case 4:

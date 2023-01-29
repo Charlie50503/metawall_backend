@@ -13,13 +13,14 @@ var usersSchema = new mongoose_1.default.Schema({
         trim: true,
     },
     sex: {
-        // 男性存 0，女性存 1，跨性別存 2
         type: String,
         enum: ["male", "female"],
+        default: "male"
     },
     avatar: {
         type: String,
         trim: true,
+        default: ""
     },
     email: {
         type: String,

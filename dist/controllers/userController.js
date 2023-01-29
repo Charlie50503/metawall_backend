@@ -39,25 +39,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var userCollection_1 = require("./../resources/userCollection");
 var jwt_1 = require("./../services/jwt");
-var userModel_1 = __importDefault(require("../models/userModel"));
 var successHandle_1 = require("../services/successHandle");
 var errorHandle_1 = require("../services/errorHandle/errorHandle");
 var bcryptjs_1 = __importDefault(require("bcryptjs"));
 var UsersController = /** @class */ (function () {
     function UsersController() {
     }
+    UsersController.prototype.getCheckIsUser = function (req, res, next) {
+        return __awaiter(this, void 0, void 0, function () {
+            var userId, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, jwt_1.JWT.decodeTokenGetId(req, res, next)];
+                    case 1:
+                        userId = (_a.sent());
+                        result = {
+                            _id: userId
+                        };
+                        return [2 /*return*/, (0, successHandle_1.successHandle)(req, res, result)];
+                }
+            });
+        });
+    };
     UsersController.prototype.getProfile = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
             var id, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        id = req.params.id;
+                        id = req.params["id"];
                         if (!id) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "沒有找到對象ID", next))];
                         }
-                        return [4 /*yield*/, userModel_1.default.findById(id)];
+                        return [4 /*yield*/, userCollection_1.UserCollectionSelect.findUserById(id)];
                     case 1:
                         result = _a.sent();
                         if (!result) {
@@ -86,11 +102,7 @@ var UsersController = /** @class */ (function () {
                         if ((avatar === null || avatar === void 0 ? void 0 : avatar.length) !== 0) {
                             updateData["avatar"] = avatar;
                         }
-                        return [4 /*yield*/, userModel_1.default.findByIdAndUpdate(userId, updateData, {
-                                upsert: true,
-                                returnOriginal: false,
-                                runValidators: true,
-                            })];
+                        return [4 /*yield*/, userCollection_1.UserCollectionUpdate.findUserAndUpdate(userId, updateData)];
                     case 2:
                         _result = _b.sent();
                         if (!_result) {
@@ -115,9 +127,7 @@ var UsersController = /** @class */ (function () {
                         return [4 /*yield*/, jwt_1.JWT.decodeTokenGetId(req, res, next)];
                     case 2:
                         userId = _b.sent();
-                        return [4 /*yield*/, userModel_1.default.findByIdAndUpdate(userId, {
-                                password: bcryptPassword,
-                            })];
+                        return [4 /*yield*/, userCollection_1.UserCollectionUpdate.updateUserPassword(userId, bcryptPassword)];
                     case 3:
                         _result = _b.sent();
                         if (!_result) {
@@ -138,7 +148,7 @@ var UsersController = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _a = req.body, email = _a.email, originPassword = _a.password, nickName = _a.nickName;
-                        return [4 /*yield*/, userModel_1.default.findOne({ email: email })];
+                        return [4 /*yield*/, userCollection_1.UserCollectionSelect.findEmail(email)];
                     case 1:
                         if (_b.sent()) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "此 Email 已被註冊", next))];
@@ -146,11 +156,7 @@ var UsersController = /** @class */ (function () {
                         return [4 /*yield*/, bcryptjs_1.default.hash(originPassword, 12)];
                     case 2:
                         password = _b.sent();
-                        return [4 /*yield*/, userModel_1.default.create({
-                                nickName: nickName,
-                                email: email,
-                                password: password,
-                            })];
+                        return [4 /*yield*/, userCollection_1.UserCollectionInsert.createUser(nickName, email, password)];
                     case 3:
                         _result = _b.sent();
                         if (!_result) {
@@ -162,6 +168,7 @@ var UsersController = /** @class */ (function () {
                         (0, successHandle_1.successHandle)(req, res, {
                             token: token,
                             nickName: _result.nickName,
+                            _id: _result.id
                         });
                         return [2 /*return*/];
                 }
@@ -175,7 +182,7 @@ var UsersController = /** @class */ (function () {
                 switch (_b.label) {
                     case 0:
                         _a = req.body, email = _a.email, password = _a.password;
-                        return [4 /*yield*/, userModel_1.default.findOne({ email: email }).select("+password")];
+                        return [4 /*yield*/, userCollection_1.UserCollectionSelect.findUserIncludePasswordByEmail(email)];
                     case 1:
                         user = _b.sent();
                         if (!user) {
@@ -193,6 +200,7 @@ var UsersController = /** @class */ (function () {
                         (0, successHandle_1.successHandle)(req, res, {
                             token: token,
                             nickName: user.nickName,
+                            _id: user.id
                         });
                         return [2 /*return*/];
                 }

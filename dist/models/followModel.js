@@ -15,13 +15,16 @@ var followSchema = new mongoose_1.default.Schema({
         select: false,
         unique: true,
     },
-    following: [
-        {
-            // 別人
-            type: mongoose_2.Schema.Types.ObjectId,
-            ref: "User",
-        },
-    ],
+    following: [{
+            user: {
+                // 別人
+                type: mongoose_2.Schema.Types.ObjectId,
+                ref: "User",
+            },
+            createdAt: {
+                type: Date,
+            }
+        }],
     createdAt: {
         type: Date,
         default: Date.now,

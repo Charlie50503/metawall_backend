@@ -27,8 +27,8 @@ var RequestParams = /** @class */ (function () {
         next();
     };
     RequestParams.postCreatePost = function (req, res, next) {
-        var _a = req.body, content = _a.content, imgURL = _a.imgURL;
-        checkValidator_1.CheckValidator.checkerParams({ content: content, imgURL: imgURL });
+        var _a = req.body, content = _a.content, imgUrl = _a.imgUrl;
+        checkValidator_1.CheckValidator.checkerParams({ content: content, imgUrl: imgUrl });
         next();
     };
     RequestParams.postCreateComment = function (req, res, next) {

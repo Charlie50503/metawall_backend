@@ -35,13 +35,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+var commentCollection_1 = require("./../resources/commentCollection");
+var postCollection_1 = require("./../resources/postCollection");
 var errorHandle_1 = require("../services/errorHandle/errorHandle");
-var commentModel_1 = __importDefault(require("../models/commentModel"));
-var postModel_1 = __importDefault(require("../models/postModel"));
 var jwt_1 = require("../services/jwt");
 var successHandle_1 = require("../services/successHandle");
 var CommentController = /** @class */ (function () {
@@ -49,7 +46,7 @@ var CommentController = /** @class */ (function () {
     }
     CommentController.prototype.postCreateComment = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var postId, _isPostExist, userId, comment, _createResult, query, updateDocument, _updateResult;
+            var postId, _isPostExist, userId, comment, _createResult, _updateResult, _findCreatedCommentResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -57,7 +54,7 @@ var CommentController = /** @class */ (function () {
                         if (!postId) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "沒找到 postId", next))];
                         }
-                        return [4 /*yield*/, postModel_1.default.findOne({ _id: postId, isDeleted: false }).catch(function (error) {
+                        return [4 /*yield*/, postCollection_1.PostCollectionSelect.findOnePost(postId).catch(function (error) {
                                 return next(errorHandle_1.ErrorHandle.appError("400", "沒有找到貼文", next));
                             })];
                     case 1:
@@ -69,11 +66,7 @@ var CommentController = /** @class */ (function () {
                     case 2:
                         userId = (_a.sent());
                         comment = req.body["comment"];
-                        return [4 /*yield*/, commentModel_1.default.create({
-                                creator: userId,
-                                postId: postId,
-                                comment: comment,
-                            }).catch(function (error) {
+                        return [4 /*yield*/, commentCollection_1.CommentCollectionInsert.createComment(postId, userId, comment).catch(function (error) {
                                 return next(errorHandle_1.ErrorHandle.appError("400", "新增留言失敗", next));
                             })];
                     case 3:
@@ -81,21 +74,17 @@ var CommentController = /** @class */ (function () {
                         if (!(_createResult === null || _createResult === void 0 ? void 0 : _createResult.id)) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "新增留言失敗", next))];
                         }
-                        query = { _id: postId, isDeleted: false };
-                        updateDocument = {
-                            $addToSet: { comments: _createResult.id },
-                            upsert: true,
-                            returnOriginal: false,
-                            runValidators: true,
-                        };
-                        return [4 /*yield*/, postModel_1.default.updateOne(query, updateDocument)];
+                        return [4 /*yield*/, postCollection_1.PostCollectionUpdate.addCommentInPost(postId, _createResult.id)];
                     case 4:
                         _updateResult = _a.sent();
                         if ((_updateResult === null || _updateResult === void 0 ? void 0 : _updateResult.acknowledged) === false) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "添加失敗", next))];
                         }
+                        return [4 /*yield*/, commentCollection_1.CommentCollectionSelect.findCommentAndCreatorInfoById(_createResult.id)];
+                    case 5:
+                        _findCreatedCommentResult = _a.sent();
                         (0, successHandle_1.successHandle)(req, res, {
-                            message: "新增成功"
+                            comment: _findCreatedCommentResult
                         });
                         return [2 /*return*/];
                 }
@@ -104,7 +93,7 @@ var CommentController = /** @class */ (function () {
     };
     CommentController.prototype.deleteDeleteComment = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var commentId, _isCommentExist, userId, _updateResult;
+            var commentId, _isCommentExist, _updateResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -112,7 +101,7 @@ var CommentController = /** @class */ (function () {
                         if (!commentId) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "沒找到 commentId", next))];
                         }
-                        return [4 /*yield*/, commentModel_1.default.findOne({ _id: commentId, isDeleted: false }).catch(function (error) {
+                        return [4 /*yield*/, commentCollection_1.CommentCollectionSelect.findOneCommentById(commentId).catch(function (error) {
                                 return next(errorHandle_1.ErrorHandle.appError("400", "留言不存在", next));
                             })];
                     case 1:
@@ -120,13 +109,10 @@ var CommentController = /** @class */ (function () {
                         if (!_isCommentExist) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "留言不存在", next))];
                         }
-                        return [4 /*yield*/, jwt_1.JWT.decodeTokenGetId(req, res, next)];
-                    case 2:
-                        userId = (_a.sent());
-                        return [4 /*yield*/, commentModel_1.default.findByIdAndUpdate(commentId, { isDeleted: true }).catch(function (error) {
+                        return [4 /*yield*/, commentCollection_1.CommentCollectionUpdate.deleteCommentById(commentId).catch(function (error) {
                                 return next(errorHandle_1.ErrorHandle.appError("400", "更新失敗", next));
                             })];
-                    case 3:
+                    case 2:
                         _updateResult = _a.sent();
                         (0, successHandle_1.successHandle)(req, res, {
                             message: "刪除成功"
@@ -147,13 +133,7 @@ var CommentController = /** @class */ (function () {
                         return [4 /*yield*/, jwt_1.JWT.decodeTokenGetId(req, res, next)];
                     case 1:
                         userId = (_a.sent());
-                        return [4 /*yield*/, commentModel_1.default.findOneAndUpdate({
-                                _id: commentId,
-                                creator: userId,
-                                isDeleted: false
-                            }, {
-                                comment: comment
-                            }, { upsert: true, returnOriginal: false, runValidators: true })
+                        return [4 /*yield*/, commentCollection_1.CommentCollectionUpdate.updateCommentContentById(commentId, userId, comment)
                                 .catch(function (error) {
                                 return next(errorHandle_1.ErrorHandle.appError("400", "更新失敗", next));
                             })];

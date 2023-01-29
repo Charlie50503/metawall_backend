@@ -14,6 +14,9 @@ var post_1 = __importDefault(require("./routes/post"));
 var follow_1 = __importDefault(require("./routes/follow"));
 var comment_1 = __importDefault(require("./routes/comment"));
 var like_1 = __importDefault(require("./routes/like"));
+var upload_1 = __importDefault(require("./routes/upload"));
+// const cors = require('cors');
+var cors_1 = __importDefault(require("cors"));
 var app = (0, express_1.default)();
 // 程式出現重大錯誤時
 process.on("uncaughtException", function (err) {
@@ -27,6 +30,7 @@ require("./connections");
 // view engine setup
 app.set("views", path_1.default.join(__dirname, "views"));
 app.set("view engine", "ejs");
+app.use((0, cors_1.default)());
 app.use((0, morgan_1.default)("dev"));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
@@ -38,6 +42,7 @@ app.use("/post", post_1.default);
 app.use("/follow", follow_1.default);
 app.use("/comment", comment_1.default);
 app.use("/like", like_1.default);
+app.use("/upload", upload_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     res.status(404).json({ status: 'error', message: '無此路由' });

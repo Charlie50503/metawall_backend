@@ -35,11 +35,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var postModel_1 = __importDefault(require("../models/postModel"));
+var postCollection_1 = require("./../resources/postCollection");
 var errorHandle_1 = require("../services/errorHandle/errorHandle");
 var jwt_1 = require("../services/jwt");
 var successHandle_1 = require("../services/successHandle");
@@ -56,11 +53,7 @@ var LikeController = /** @class */ (function () {
                         if (!userId) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "沒找到 userId", next))];
                         }
-                        console.log("userId", userId);
-                        return [4 /*yield*/, postModel_1.default.find({
-                                likes: userId,
-                                isDeleted: false
-                            }).catch(function (error) {
+                        return [4 /*yield*/, postCollection_1.PostCollectionSelect.findPostListByLike(userId).catch(function (error) {
                                 return next(errorHandle_1.ErrorHandle.appError("400", "沒有找到內容", next));
                             })];
                     case 1:
@@ -74,7 +67,7 @@ var LikeController = /** @class */ (function () {
     };
     LikeController.prototype.postAddLikeOfPost = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var postId, userId, _isPostExist, query, updateDocument, _updateResult;
+            var postId, userId, _isPostExist, _doUpdateResult, _updatedResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -85,30 +78,27 @@ var LikeController = /** @class */ (function () {
                         return [4 /*yield*/, jwt_1.JWT.decodeTokenGetId(req, res, next)];
                     case 1:
                         userId = (_a.sent());
-                        return [4 /*yield*/, postModel_1.default.findOne({ _id: postId, isDeleted: false })];
+                        return [4 /*yield*/, postCollection_1.PostCollectionSelect.findOnePost(postId)];
                     case 2:
                         _isPostExist = _a.sent();
                         if (!_isPostExist) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "貼文不存在", next))];
                         }
-                        query = { _id: postId, isDeleted: false };
-                        updateDocument = {
-                            $addToSet: { likes: userId },
-                            upsert: true,
-                            returnOriginal: false,
-                            runValidators: true,
-                        };
-                        return [4 /*yield*/, postModel_1.default.updateOne(query, updateDocument)];
+                        return [4 /*yield*/, postCollection_1.PostCollectionUpdate.addLikeInPost(postId, userId)];
                     case 3:
-                        _updateResult = _a.sent();
-                        console.log("_updateResult", _updateResult);
-                        if ((_updateResult === null || _updateResult === void 0 ? void 0 : _updateResult.acknowledged) === true && (_updateResult === null || _updateResult === void 0 ? void 0 : _updateResult.modifiedCount) === 0) {
+                        _doUpdateResult = _a.sent();
+                        console.log("_doUpdateResult", _doUpdateResult);
+                        if ((_doUpdateResult === null || _doUpdateResult === void 0 ? void 0 : _doUpdateResult.acknowledged) === true && (_doUpdateResult === null || _doUpdateResult === void 0 ? void 0 : _doUpdateResult.modifiedCount) === 0) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "已添加過like", next))];
                         }
-                        if ((_updateResult === null || _updateResult === void 0 ? void 0 : _updateResult.acknowledged) === false) {
+                        if ((_doUpdateResult === null || _doUpdateResult === void 0 ? void 0 : _doUpdateResult.acknowledged) === false) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "添加失敗", next))];
                         }
+                        return [4 /*yield*/, postCollection_1.PostCollectionSelect.findOnePostWithFullData(postId)];
+                    case 4:
+                        _updatedResult = _a.sent();
                         (0, successHandle_1.successHandle)(req, res, {
+                            post: _updatedResult,
                             message: "新增成功"
                         });
                         return [2 /*return*/];
@@ -118,7 +108,7 @@ var LikeController = /** @class */ (function () {
     };
     LikeController.prototype.deleteDeleteLikeOfPost = function (req, res, next) {
         return __awaiter(this, void 0, void 0, function () {
-            var postId, userId, _isPostExist, query, updateDocument, _updateResult;
+            var postId, userId, _isPostExist, _doUpdateResult, _updatedResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -129,30 +119,27 @@ var LikeController = /** @class */ (function () {
                         return [4 /*yield*/, jwt_1.JWT.decodeTokenGetId(req, res, next)];
                     case 1:
                         userId = (_a.sent());
-                        return [4 /*yield*/, postModel_1.default.findOne({ _id: postId, isDeleted: false })];
+                        return [4 /*yield*/, postCollection_1.PostCollectionSelect.findOnePost(postId)];
                     case 2:
                         _isPostExist = _a.sent();
                         if (!_isPostExist) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "貼文不存在", next))];
                         }
-                        query = { _id: postId, isDeleted: false };
-                        updateDocument = {
-                            $pull: { likes: userId },
-                            upsert: true,
-                            returnOriginal: false,
-                            runValidators: true,
-                        };
-                        return [4 /*yield*/, postModel_1.default.updateOne(query, updateDocument)];
+                        return [4 /*yield*/, postCollection_1.PostCollectionUpdate.sliceLikeInPost(postId, userId)];
                     case 3:
-                        _updateResult = _a.sent();
-                        console.log(_updateResult);
-                        if ((_updateResult === null || _updateResult === void 0 ? void 0 : _updateResult.acknowledged) === false) {
+                        _doUpdateResult = _a.sent();
+                        console.log(_doUpdateResult);
+                        if ((_doUpdateResult === null || _doUpdateResult === void 0 ? void 0 : _doUpdateResult.acknowledged) === false) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "添加失敗", next))];
                         }
-                        if ((_updateResult === null || _updateResult === void 0 ? void 0 : _updateResult.acknowledged) === true && (_updateResult === null || _updateResult === void 0 ? void 0 : _updateResult.modifiedCount) === 0) {
+                        if ((_doUpdateResult === null || _doUpdateResult === void 0 ? void 0 : _doUpdateResult.acknowledged) === true && (_doUpdateResult === null || _doUpdateResult === void 0 ? void 0 : _doUpdateResult.modifiedCount) === 0) {
                             return [2 /*return*/, next(errorHandle_1.ErrorHandle.appError("400", "已刪除like", next))];
                         }
+                        return [4 /*yield*/, postCollection_1.PostCollectionSelect.findOnePostWithFullData(postId)];
+                    case 4:
+                        _updatedResult = _a.sent();
                         (0, successHandle_1.successHandle)(req, res, {
+                            post: _updatedResult,
                             message: "刪除成功"
                         });
                         return [2 /*return*/];

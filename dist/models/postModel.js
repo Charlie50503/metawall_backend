@@ -18,7 +18,7 @@ var postsSchema = new mongoose_2.default.Schema({
         required: [true, "請填寫貼文內容"],
         trim: true,
     },
-    imgURL: {
+    imgUrl: {
         type: String,
         trim: true,
     },

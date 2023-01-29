@@ -14,9 +14,5 @@ router.patch("/profile", auth_1.default.checkToken, requestParams_1.default.patc
 router.patch("/update-password", auth_1.default.checkToken, requestParams_1.default.updatePassword, errorHandle_1.ErrorHandle.handleErrorAsync(userController_1.default.patchUpdatePassword));
 router.post("/sign-in", requestParams_1.default.signIn, errorHandle_1.ErrorHandle.handleErrorAsync(userController_1.default.postSignIn));
 router.post("/sign-up", requestParams_1.default.signUp, errorHandle_1.ErrorHandle.handleErrorAsync(userController_1.default.postSignUp));
-router.get("/check-is-user", auth_1.default.checkToken, function (req, res) {
-    res.status(200).json({
-        message: "驗證成功",
-    });
-});
+router.get("/check-is-user", auth_1.default.checkToken, errorHandle_1.ErrorHandle.handleErrorAsync(userController_1.default.getCheckIsUser));
 exports.default = router;
